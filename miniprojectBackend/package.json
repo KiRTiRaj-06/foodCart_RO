@@ -1,0 +1,12 @@
+{
+  "name": "minipbackend",
+  "version": "1.0.0",
+  "description": "miniproject's small backend code just using java script objects for data base",
+  "license": "MIT",
+  "author": "Kirttiraj",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm start"
+  }
+}
