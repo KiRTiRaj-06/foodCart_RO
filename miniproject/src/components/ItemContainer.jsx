@@ -1,7 +1,8 @@
 // src/components/ItemContainer.jsx
 import React from "react";
 
-export default function ItemContainer({ item, quantity = 0, onAdd, onRemove }) {
+export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) {
+  
   const hasDiscount = item?.discount > 0;
   const discountedPrice = hasDiscount
     ? Math.round(item.price - (item.price * item.discount) / 100)
@@ -11,7 +12,7 @@ export default function ItemContainer({ item, quantity = 0, onAdd, onRemove }) {
     <div className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-all duration-200 hover:shadow-xl hover:shadow-black/30">
 
       {/* ── Image — exact same height as original MenuCard ── */}
-      <div className="h-36 bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
+      <div className="h-36 bg-linear-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
 
         {item?.image ? (
           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -51,7 +52,7 @@ export default function ItemContainer({ item, quantity = 0, onAdd, onRemove }) {
         {/* Name + Description */}
         <div>
           <h3 className="text-zinc-100 font-semibold text-sm">{item?.name || "Item Name"}</h3>
-          <p className="text-zinc-500 text-xs mt-0.5 leading-relaxed line-clamp-2">{item?.desc || ""}</p>
+          <p className="text-zinc-500 text-xs mt-0.5 leading-relaxed line-clamp-2">{item?.description || ""}</p>
         </div>
 
         {/* Price + Buttons row */}
@@ -77,7 +78,7 @@ export default function ItemContainer({ item, quantity = 0, onAdd, onRemove }) {
           </div>
 
           {/* Buttons */}
-          <div className={`flex items-center gap-1.5 flex-shrink-0 ${!item?.available ? "opacity-40 pointer-events-none" : ""}`}>
+          <div className={`flex items-center gap-1.5 shrink-0 ${!item?.available ? "opacity-40 pointer-events-none" : ""}`}>
 
             {/* Remove button — only visible when quantity > 0 */}
             {quantity > 0 && (

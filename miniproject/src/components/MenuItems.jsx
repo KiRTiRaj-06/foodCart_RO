@@ -1,24 +1,51 @@
 // src/components/MenuItems.jsx
-import React from 'react';
-import ItemContainer from './ItemContainer';
+import React, { useEffect, useState } from 'react';
+
+import ItemContainer from './ItemContainer'
+import { useMenu } from '../context/MenuContext';
+import { useCart } from '../context/CartContext';
+import { getMenu } from "../api/api";
 
 const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
 
 const MENU_ITEMS = [
-    { id: 1, name: "Paneer Tikka",    category: "Starters", price: 220, discount: 0,  desc: "Grilled cottage cheese with spiced marinade",      badge: "Popular",     veg: true,  available: true  },
-    { id: 2, name: "Chicken Wings",   category: "Starters", price: 280, discount: 15, desc: "Crispy wings tossed in tangy sauce",               badge: null,          veg: false, available: true  },
-    { id: 3, name: "Dal Makhani",     category: "Mains",    price: 180, discount: 0,  desc: "Slow-cooked black lentils in buttery gravy",       badge: "Chef's Pick", veg: true,  available: true  },
-    { id: 4, name: "Butter Chicken",  category: "Mains",    price: 320, discount: 10, desc: "Tender chicken in rich tomato-cream sauce",        badge: "Popular",     veg: false, available: true  },
-    { id: 5, name: "Gulab Jamun",     category: "Desserts", price: 80,  discount: 0,  desc: "Soft milk-solid dumplings in rose syrup",          badge: null,          veg: true,  available: true  },
-    { id: 6, name: "Mango Lassi",     category: "Drinks",   price: 90,  discount: 0,  desc: "Chilled yogurt blended with fresh mango",          badge: null,          veg: true,  available: false },
-    { id: 7, name: "Veg Biryani",     category: "Mains",    price: 200, discount: 0,  desc: "Fragrant basmati with seasonal vegetables",        badge: null,          veg: true,  available: true  },
-    { id: 8, name: "Masala Chai",     category: "Drinks",   price: 40,  discount: 20, desc: "Spiced Indian milk tea",                           badge: null,          veg: true,  available: true  },
+{ id: 1, name: "Paneer Tikka",    category: "Starters", price: 220, discount: 0,  description: "Grilled cottage cheese with spiced marinade", 
+	image: "https://images.pexels.com/photos/33430558/pexels-photo-33430558.jpeg"  ,    badge: "Popular",     veg: true,  available: true  },
+
+    { id: 2, name: "Chicken Wings",   category: "Starters", price: 280, discount: 15, description: "Crispy wings tossed in tangy sauce", 
+	image:"https://images.pexels.com/photos/29908653/pexels-photo-29908653.jpeg"   ,            badge: null,          veg: false, available: true  },
+
+    { id: 3, name: "Dal Makhani",     category: "Mains",    price: 180, discount: 0,  description: "Slow-cooked black lentils in buttery gravy", 
+	image: "https://images.pexels.com/photos/28674561/pexels-photo-28674561.jpeg"    ,   badge: "Chef's Pick", veg: true,  available: true  },
+
+    { id: 4, name: "Butter Chicken",  category: "Mains",    price: 320, discount: 10, description: "Tender chicken in rich tomato-cream sauce", 
+        image: 	"https://images.pexels.com/photos/9738981/pexels-photo-9738981.jpeg"   ,     badge: "Popular",     veg: false, available: true  },
+
+    { id: 5, name: "Gulab Jamun",     category: "Desserts", price: 80,  discount: 0,  description: "Soft milk-solid dumplings in rose syrup", 
+        image: 	"https://images.pexels.com/photos/15014918/pexels-photo-15014918.jpeg"   ,     badge: null,          veg: true,  available: true  },
+
+    { id: 6, name: "Mango Lassi",     category: "Drinks",   price: 90,  discount: 0,  description: "Chilled yogurt blended with fresh mango",  
+	    image: "https://images.pexels.com/photos/18142611/pexels-photo-18142611.jpeg"  ,      badge: null,          veg: true,  available: false },
+
+    { id: 7, name: "Veg Biryani",     category: "Mains",    price: 200, discount: 0,  description: "Fragrant basmati with seasonal vegetables", 
+	image: "https://images.pexels.com/photos/35287414/pexels-photo-35287414.jpeg"     ,   badge: null,          veg: true,  available: true  },
+
+    { id: 8, name: "Masala Chai",     category: "Drinks",   price: 40,  discount: 20, description: "Spiced Indian milk tea",      
+	image: "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg"  ,          badge: null,          veg: true,  available: true  }
 ];
 
-export default function MenuItems({ searchedItem, onAddToCart, onRemoveFromCart, cartItems }) {
-    const [activeCategory, setActiveCategory] = React.useState("All");
+export default function MenuItems() {
+    const {searchedItem , activeCategory, updateCategory} = useMenu();
+    const {addToCart, removeFromCart, getQuantity } = useCart();
+    
+    const[menu,setMenu] = useState([])
 
-    const filtered = MENU_ITEMS.filter((item) => {
+    useEffect(()=>{
+        getMenu().then((data)=> setMenu(data))
+    },[])
+
+
+    const filtered = menu.filter((item) => {
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
     const matchesSearch = item.name
         .toLowerCase()
@@ -26,11 +53,7 @@ export default function MenuItems({ searchedItem, onAddToCart, onRemoveFromCart,
     return matchesCategory && matchesSearch;
     });
 
-  // Helper: get current quantity of an item from cartItems
-    const getQuantity = (id) => {
-    const found = cartItems.find((i) => i.id === id);
-    return found ? found.quantity : 0;
-    };
+
 
 return (
     <div className="flex flex-col h-full">
@@ -40,8 +63,8 @@ return (
         {CATEGORIES.map((cat) => (
         <button
             key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+            onClick={() => updateCategory(cat)}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
             activeCategory === cat
                 ? "bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/25"
                 : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
@@ -77,8 +100,8 @@ return (
             key={item.id}
             item={item}
             quantity={getQuantity(item.id)}
-            onAdd={onAddToCart}
-            onRemove={onRemoveFromCart}
+            onAdd={addToCart}
+            onRemove={removeFromCart}
             />
         ))}
         </div>

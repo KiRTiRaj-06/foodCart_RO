@@ -1,16 +1,27 @@
 import { NavLink ,Link } from "react-router";
 import logo from "../assets/logo.png"
-function Header({tableNumber,searchedItem , onSearchChange}) {
+import { useCart } from "../context/CartContext";
+import { useMenu } from "../context/MenuContext";
+import { useUser } from "../context/UserContext";
+
+
+function Header() {
+    const { searchedItem, updateSearch } = useMenu();
+    const { user, isLoggedIn, logout } = useUser();
+
+    const tableNumber = Math.floor((Math.random()*20) +1 );
     return(
         <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950 border-b border-zinc-800 h-16 flex items-center px-6 gap-4">
             {/* LOGO */}
             <div className="flex items-center gap-3 min-w-fit">
+                    <Link path="/">
                     {logo?
-                        <img src={logo} alt="E" className="w-10 h-10 rounded-3xl" /> :
+                        <img src={"https://images.pexels.com/photos/36895285/pexels-photo-36895285.jpeg"} alt="E" className="w-10 h-10 rounded-3xl" /> :
                         <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
                             <span className="text-zinc-950 font-black text-lg tracking-tight">E</span>
                         </div>
                         }
+                    </Link>
                 <span className="text-white font-semibold text-sm tracking-wide hidden sm:block">
                         Eshcalix
                 </span>
@@ -38,7 +49,7 @@ function Header({tableNumber,searchedItem , onSearchChange}) {
                             type="text"
                             placeholder="Search for dishes..."
                             value={searchedItem}
-                            onChange={(e) => onSearchChange(e.target.value)}
+                            onChange={(e) => updateSearch(e.target.value)}
                             className="w-full bg-zinc-900 border border-zinc-700 rounded-full py-2 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 transition-all duration-200"
                         />
                     </div>

@@ -1,10 +1,18 @@
 // src/components/Cart.jsx
 import React from "react";
+import { useCart } from "../context/CartContext";
 
-export default function Cart({ cartItems, onIncrease, onDecrease, onRemove }) {
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * 0.05;
-  const total = subtotal + tax;
+export default function Cart() {
+  const {
+    cartItems,
+    subtotal,
+    tax,
+    orderTotal,
+    increaseQuantity,
+    decreaseQuantity,
+    removeItem,
+    clearCart,
+  } = useCart();
 
   if (cartItems.length === 0) {
     return (
@@ -31,7 +39,7 @@ export default function Cart({ cartItems, onIncrease, onDecrease, onRemove }) {
           <span className="ml-2 text-zinc-500 font-normal">({cartItems.length} items)</span>
         </h2>
         <button
-          onClick={() => cartItems.forEach((i) => onRemove(i.id))}
+          onClick={clearCart}
           className="text-xs text-zinc-500 hover:text-red-400 transition-colors duration-200"
         >
           Clear all
@@ -44,9 +52,9 @@ export default function Cart({ cartItems, onIncrease, onDecrease, onRemove }) {
           <CartItem
             key={item.id}
             item={item}
-            onIncrease={onIncrease}
-            onDecrease={onDecrease}
-            onRemove={onRemove}
+            onIncrease={increaseQuantity}
+            onDecrease={decreaseQuantity}
+            onRemove={removeItem}
           />
         ))}
       </div>
@@ -69,7 +77,7 @@ export default function Cart({ cartItems, onIncrease, onDecrease, onRemove }) {
           <div className="border-t border-zinc-700 my-1" />
           <div className="flex justify-between text-base font-black text-zinc-100">
             <span>Total</span>
-            <span className="text-amber-400">₹{total.toFixed(2)}</span>
+            <span className="text-amber-400">₹{orderTotal.toFixed(2)}</span>
           </div>
         </div>
 
@@ -85,8 +93,8 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   return (
     <div className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl p-3 hover:border-zinc-700 transition-colors duration-200">
       {/* Color Swatch / Thumbnail */}
-      <div className="w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0 text-xl">
-        🍽️
+      <div className="w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 text-xl">
+        <img src={item.image} alt="" className="w-10 h-10 rounded-3xl" />
       </div>
 
       {/* Info */}
@@ -96,7 +104,7 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
       </div>
 
       {/* Quantity Controls */}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => onDecrease(item.id)}
           className="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center text-sm transition-colors duration-150 active:scale-90"

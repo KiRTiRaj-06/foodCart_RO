@@ -1,0 +1,41 @@
+
+import React, { useState } from 'react'
+import { useUser } from '../context/UserContext'
+function Login() {
+    const { setUser} = useUser()
+    const [userr,setUserr] = useState([])
+
+    const [pass,setPass] = useState('')
+    const [email,setEmail] = useState('')
+    const handleLogin = (e) =>{
+        e.preventDefault()
+        setUserr({email,pass})
+    }   
+    setUser(userr)
+
+return (
+    <div className='flex flex-col justify-center items-center w-auto h-auto'>
+        <form onSubmit={handleLogin} className='flex flex-col gap-3'>   
+            <h1>LOGIN</h1>
+            <label htmlFor="email"> Email</label>
+            <input type="text" id='email' placeholder='Enter email' 
+            className=''
+            value={email}
+            onChange={(e)=> setEmail(e.target.value)}
+            />
+            <label htmlFor="pass">PassWord</label>
+            <input type="text" id='pass' placeholder='Enter PassWord' 
+            className=''
+            value={pass}
+            onChange={(e)=> setPass(e.target.value)}
+            />
+
+            <button type='submit' className=' rounded-2xl bg-cyan-400 border-gray-500 p-3 m-2'>
+                Submit
+            </button>
+        </form>
+    </div>
+    )
+}
+
+export default Login

@@ -1,7 +1,8 @@
 // src/components/Sidebar.jsx
-import React from "react";
+import { useCart } from "../context/CartContext";
 
-export default function Sidebar({ activePage, onNavigate, cartCount, orderTotal }) {
+export default function Sidebar({ activePage, onNavigate }) {
+    const {cartCount , orderTotal} = useCart()
   return (
     <aside className="fixed left-0 top-16 bottom-0 w-20 lg:w-56 bg-zinc-950 border-r border-zinc-800 flex flex-col justify-between py-6 z-40">
       {/* Nav Links */}
@@ -17,7 +18,7 @@ export default function Sidebar({ activePage, onNavigate, cartCount, orderTotal 
           }`}
         >
           <svg
-            className="w-5 h-5 flex-shrink-0"
+            className="w-5 h-5 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -42,7 +43,7 @@ export default function Sidebar({ activePage, onNavigate, cartCount, orderTotal 
           }`}
         >
           {/* Cart Icon */}
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -101,7 +102,7 @@ export default function Sidebar({ activePage, onNavigate, cartCount, orderTotal 
           className="flex items-center gap-3 rounded-xl px-3 py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95"
         >
           <svg
-            className="w-5 h-5 flex-shrink-0"
+            className="w-5 h-5 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
