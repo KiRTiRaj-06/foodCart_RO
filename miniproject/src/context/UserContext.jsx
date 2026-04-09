@@ -4,18 +4,35 @@ import {apiLogin, apiRegister, apiMe} from '../api/api'
 
 const UserContext = createContext(null);
 
+// Admin credentials from .env (VITE_ prefix required by Vite)
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+const ADMIN_PASS  = import.meta.env.VITE_ADMIN_PASS;
+
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // On mount — if a token exists in localStorage try to restore the session
   useEffect(() => {
+    // Restore admin session
+    const isAdmin = localStorage.getItem("admin");
+    if (isAdmin) {
+      setUser({ id: 0, username: "Admin", email: ADMIN_EMAIL });
+      setAuthLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setAuthLoading(false);
+      return;
+    }
     apiMe()
       .then((data) => setUser(data.user))
-      .catch(() => localStorage.removeItem("token")); // token expired/invalid
+      .catch(() => localStorage.removeItem("token"))
+      .finally(() => setAuthLoading(false));
   }, []);
 
 
@@ -23,12 +40,28 @@ export function UserProvider({ children }) {
   const login = async ({ email, password }) => {
     setIsLoading(true);
     setAuthError("");
+
+    // ── Admin shortcut (not in database) ──────────────
+    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
+      localStorage.setItem("admin", "true");
+      setUser({ id: 0, username: "Admin", email: ADMIN_EMAIL });
+      setIsLoading(false);
+      return "admin";   // signal to Login.jsx to navigate to /admin
+    }
+
+    if (email === ADMIN_EMAIL) {
+      setAuthError("Invalid admin password");
+      setIsLoading(false);
+      throw new Error("Invalid admin password");
+    }
+
     try {
       const data = await apiLogin({ email, password });
       localStorage.setItem("token", data.token);
       setUser(data.user);
     } catch (err) {
       setAuthError(err.message || "Login failed. Please try again.");
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -43,6 +76,7 @@ export function UserProvider({ children }) {
       setUser(data.user);
     } catch (err) {
       setAuthError(err.message ||"Signup failed. Please try again.");
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +84,7 @@ export function UserProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("admin");
     setUser(null);
     setAuthError("");
   };
@@ -65,6 +100,7 @@ export function UserProvider({ children }) {
         setUser,
         isLoggedIn,
         isLoading,
+        authLoading,
         authError,
         login,
         signup,

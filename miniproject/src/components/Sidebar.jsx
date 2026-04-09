@@ -98,7 +98,7 @@ export default function Sidebar({ activePage, onNavigate }) {
       
         {/* Place Order Button */}
       <button
-          onClick={() => onNavigate("order")}
+          onClick={() => onNavigate("cart")}
           className="flex items-center gap-3 rounded-xl px-3 py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95"
         >
           <svg

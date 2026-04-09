@@ -29,6 +29,29 @@ app.use(
     })
 );
 
+// ── Routes ────────────────────────────────────────────────────
+app.use("/api/auth",  require("./routes/auth"));
+app.use("/api/menu",  require("./routes/menu"));
+app.use("/api/cart",  require("./routes/cart"));
+app.use("/api/order", require("./routes/order"));
+app.use("/api/admin", require("./routes/admin"));
+
+// ── Health check ──────────────────────────────────────────────
+app.get("/api/health", (req, res) => {
+    res.json({ success: true, message: "Server is running" });
+});
+
+// ── 404 fallback ──────────────────────────────────────────────
+app.use((req, res) => {
+res.status(404).json({ success: false, message: "Route not found" });
+});
+
+// ── Global error handler ──────────────────────────────────────
+app.use((err, req, res, next) => {
+    console.error("Unhandled error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

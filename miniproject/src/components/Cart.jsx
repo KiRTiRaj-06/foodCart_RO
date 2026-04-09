@@ -1,5 +1,6 @@
 // src/components/Cart.jsx
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 export default function Cart() {
@@ -12,7 +13,22 @@ export default function Cart() {
     decreaseQuantity,
     removeItem,
     clearCart,
+    placeOrder,
+    orderLoading,
+    orderError,
   } = useCart();
+  const navigate = useNavigate();
+  const [placingError, setPlacingError] = useState("");
+
+  const handleConfirmOrder = async () => {
+    setPlacingError("");
+    try {
+      const order = await placeOrder();       // calls POST /api/order/place
+      navigate("/order", { state: { order } }); // pass order data to Order page
+    } catch (err) {
+      setPlacingError(err.message || "Failed to place order");
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -81,8 +97,17 @@ export default function Cart() {
           </div>
         </div>
 
-        <button className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95">
-          Confirm Order →
+        {/* Error message */}
+        {(placingError || orderError) && (
+          <p className="text-red-400 text-xs text-center">{placingError || orderError}</p>
+        )}
+
+        <button
+          onClick={handleConfirmOrder}
+          disabled={orderLoading}
+          className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {orderLoading ? "Placing Order..." : "Confirm Order →"}
         </button>
       </div>
     </div>

@@ -4,8 +4,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 function SignUp() {
-    const { signup, isLoading, authError, clearError } = useUser();
+    const { signup, isLoading, authError, clearError, isLoggedIn } = useUser();
     const navigate = useNavigate();
+
+    // Already logged in — go to menu
+    if (isLoggedIn) {
+        navigate("/menu", { replace: true });
+        return null;
+    }
 
     const [name,     setName]     = useState("");
     const [email,    setEmail]    = useState("");
@@ -29,8 +35,8 @@ const handleSubmit = async (e) => {
     }
 
     try {
-    await signup({ username: name, email, password: pass });
-      navigate("/");  // redirect to menu after signup
+    await signup({ name, email, password: pass });
+      navigate("/menu");  // redirect to menu after signup
     } catch {
       // authError is set in UserContext
     }
