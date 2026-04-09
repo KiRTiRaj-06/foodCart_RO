@@ -28,9 +28,8 @@ const request = async (method, path, body) => {
 // ════════════════════════════════════════════════════════════
 //  MENU
 // ════════════════════════════════════════════════════════════
-export const fetchMenu = (category = "All") => {
-    const query = category !== "All" ? `?category=${category}` : "";
-    return request("GET", `/menu${query}`);
+export const fetchMenu = () => {
+    return request("GET", `/menu`);
 };
 
 // ════════════════════════════════════════════════════════════
@@ -55,3 +54,9 @@ export const apiCartClear    = ()     => request("DELETE", "/cart");
 export const apiPlaceOrder   = (tableNumber) => request("POST", "/order/place",   { tableNumber });
 export const apiOrderHistory = ()            => request("GET",  "/order/history");
 export const apiOrderById    = (id)          => request("GET",  `/order/${id}`);
+
+// ════════════════════════════════════════════════════════════
+//  ADMIN
+// ════════════════════════════════════════════════════════════
+export const apiAdminUsers   = ()  => request("GET", "/admin/users");
+export const apiAdminOrders  = ()  => request("GET", "/admin/orders");

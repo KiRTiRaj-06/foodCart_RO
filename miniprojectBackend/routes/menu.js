@@ -2,10 +2,10 @@ const express = require("express");
 const router  = express.Router();
 const pool    = require("../db");
 
-router.get('/menu',(req , res)=>{
+router.get('/', async (req , res)=>{
     try {
         const query = 'SELECT * from menu'
-        const [rows] = pool.execute(query)
+        const [rows] = await pool.execute(query)
 
             // Convert tinyint booleans to JS booleans
     const items = rows.map((row) => ({

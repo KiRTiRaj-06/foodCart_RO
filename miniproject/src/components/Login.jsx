@@ -4,8 +4,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 function Login() {
-    const { login, isLoading, authError, clearError } = useUser();
+    const { login, isLoading, authError, clearError, isLoggedIn } = useUser();
     const navigate = useNavigate();
+
+    // Already logged in — go to menu
+    if (isLoggedIn) {
+        navigate("/menu", { replace: true });
+        return null;
+    }
 
     const [email, setEmail] = useState("");
     const [pass,  setPass]  = useState("");
@@ -15,8 +21,13 @@ function Login() {
         e.preventDefault();
         clearError();
         try {
-            await login({ email, password: pass });
-          navigate("/");   // redirect to menu on success
+            const result = await login({ email, password: pass });
+            // Admin login returns "admin" — go to admin dashboard
+            if (result === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/menu");
+            }
         } catch {
          // error is already set in UserContext via authError
         }

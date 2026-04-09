@@ -12,7 +12,7 @@ router.post('/register',    async (req , res) =>{
     const {username , email ,password } = req.body;
 
     if(!username || !email || !password){
-        res.status(400).json({ success: false, message: "All fields are required" })
+        return res.status(400).json({ success: false, message: "All fields are required" })
     }
 
     try {
@@ -46,7 +46,7 @@ router.post('/register',    async (req , res) =>{
     });
 
     } catch (error) {
-    console.error("POST /api/auth/register error:", err);
+    console.error("POST /api/auth/register error:", error);
     res.status(500).json({ success: false, message: "Registration failed" });
     }
 })
