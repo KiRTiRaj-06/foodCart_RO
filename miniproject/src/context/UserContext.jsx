@@ -13,6 +13,7 @@ export function UserProvider({ children }) {
   const [authError, setAuthError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [tableNumber , setTableNumber] = useState(0)
 
   // On mount — if a token exists in localStorage try to restore the session
   useEffect(() => {
@@ -36,12 +37,11 @@ export function UserProvider({ children }) {
   }, []);
 
 
-  // Call your real API here — stub for now
+  // LOGIN 
   const login = async ({ email, password }) => {
     setIsLoading(true);
     setAuthError("");
 
-    // ── Admin shortcut (not in database) ──────────────
     if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
       localStorage.setItem("admin", "true");
       setUser({ id: 0, username: "Admin", email: ADMIN_EMAIL });
@@ -59,6 +59,7 @@ export function UserProvider({ children }) {
       const data = await apiLogin({ email, password });
       localStorage.setItem("token", data.token);
       setUser(data.user);
+      setTableNumber(Math.floor(Math.random() * 30 + 1));
     } catch (err) {
       setAuthError(err.message || "Login failed. Please try again.");
       throw err;
@@ -74,6 +75,7 @@ export function UserProvider({ children }) {
       const data = await apiRegister({ username: name, email, password });
       localStorage.setItem("token", data.token);
       setUser(data.user);
+      setTableNumber(Math.floor(Math.random() * 30 + 1));
     } catch (err) {
       setAuthError(err.message ||"Signup failed. Please try again.");
       throw err;
@@ -87,6 +89,7 @@ export function UserProvider({ children }) {
     localStorage.removeItem("admin");
     setUser(null);
     setAuthError("");
+    setTableNumber(0);
   };
 
   const clearError = () => setAuthError("");
@@ -98,6 +101,7 @@ export function UserProvider({ children }) {
       value={{
         user,
         setUser,
+        tableNumber,
         isLoggedIn,
         isLoading,
         authLoading,

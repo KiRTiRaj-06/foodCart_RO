@@ -8,6 +8,7 @@ import { useUser } from "./context/UserContext";
 // Layouts
 import PublicLayout from "./components/PublicLayout";
 import AppLayout from "./components/AppLayout";
+import HeaderOnlyLayout from "./components/HeaderOnlyLayout";
 
 // Route guards
 import AuthGuard from "./routes/AuthGuard";
@@ -69,17 +70,22 @@ export default function App() {
         <Route path="signup" element={<Signup />} />
       </Route>
 
-      {/* ── Authenticated pages (Header + Sidebar + Footer) ── */}
+      {/* ── Authenticated pages ────────────────────────────── */}
       <Route element={<AuthGuard />}>
-      
+
+        {/* Pages with Header + Sidebar */}
         <Route element={<AppLayout />}>
           <Route path="menu" element={<MenuItems />} />
           <Route path="cart" element={<Cart />} />
           <Route path="order" element={<Order />} />
+        </Route>
+
+        {/* Profile — Header only, no Sidebar */}
+        <Route element={<HeaderOnlyLayout />}>
           <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Admin — must be logged in + admin flag in localStorage */}
+        {/* Admin — own layout, no header/sidebar/footer */}
         <Route path="admin" element={<ProtectedRoute />}>
           <Route element={<AdminDashboard />}>
             <Route index element={<AllMenuDetails />} />

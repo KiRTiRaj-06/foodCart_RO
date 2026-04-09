@@ -8,32 +8,33 @@ const { verifyToken } = require("../middleware/auth");
 
 const SALT_ROUNDS = 11;
 
-router.post('/register',    async (req , res) =>{
-    const {username , email ,password } = req.body;
+router.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
 
-    if(!username || !email || !password){
+    if (!username || !email || !password) {
         return res.status(400).json({ success: false, message: "All fields are required" })
     }
 
     try {
     // Check if email already exists
-    const [existing] = await pool.execute(
-        "SELECT id FROM users WHERE email = ?", [email]
+    const existing = await pool.query(
+        "SELECT id FROM users WHERE email = $1", [email]
     );
-    if (existing.length > 0) {
+    if (existing.rows.length > 0) {
         return res.status(409).json({ success: false, message: "Email already registered" });
     }
 
-
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const [result] = await pool.execute(
-        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+    const result = await pool.query(
+        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
         [username, email, hashedPassword]
     );
 
+    const newId = result.rows[0].id;
+
     const token = jwt.sign(
-        { id: result.insertId, username, email },
+        { id: newId, username, email },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
@@ -42,7 +43,7 @@ router.post('/register',    async (req , res) =>{
         success: true,
         message: "Registered successfully",
         token,
-        user: { id: result.insertId, username, email },
+        user: { id: newId, username, email },
     });
 
     } catch (error) {
@@ -60,15 +61,15 @@ if (!email || !password) {
 }
 
 try {
-    const [rows] = await pool.execute(
-      "SELECT * FROM users WHERE email = ?", [email]
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email = $1", [email]
     );
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
         return res.status(401).json({ success: false, message: "Invalid credentials or email doesn't exist " });
     }
 
-    const user = rows[0];
+    const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
@@ -96,14 +97,14 @@ try {
 // ── GET /api/auth/me  — verify token + return user info ───────
 router.get("/me", verifyToken, async (req, res) => {
 try {
-    const [rows] = await pool.execute(
-        "SELECT id, username, email, created_at FROM users WHERE id = ?",
+    const result = await pool.query(
+        "SELECT id, username, email, created_at FROM users WHERE id = $1",
         [req.user.id]
     );
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
         return res.status(404).json({ success: false, message: "User not found" });
     }
-    res.json({ success: true, user: rows[0] });
+    res.json({ success: true, user: result.rows[0] });
 } catch (err) {
     console.error("GET /api/auth/me error:", err);
     res.status(500).json({ success: false, message: "Failed to fetch user" });

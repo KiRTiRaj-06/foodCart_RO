@@ -9,8 +9,7 @@ export function MenuProvider({ children }) {
   const [menuLoading,    setMenuLoading]    = useState(true);
   const [menuError,      setMenuError]      = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-   const [menu,      setMenu]      = useState([]);
-
+  const [menu,      setMenu]      = useState([]);
   // fetch ONCE on mount
 useEffect(() => {
   setMenuLoading(true);

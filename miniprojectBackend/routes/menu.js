@@ -2,19 +2,18 @@ const express = require("express");
 const router  = express.Router();
 const pool    = require("../db");
 
-router.get('/', async (req , res)=>{
+router.get('/', async (req, res) => {
     try {
-        const query = 'SELECT * from menu'
-        const [rows] = await pool.execute(query)
+        const result = await pool.query('SELECT * FROM menu');
 
-            // Convert tinyint booleans to JS booleans
-    const items = rows.map((row) => ({
-        ...row,
-        veg:       !!row.veg,
-        available: !!row.available,
-    }));
+        // PostgreSQL returns native booleans, but ensure consistency
+        const items = result.rows.map((row) => ({
+            ...row,
+            veg:       !!row.veg,
+            available: !!row.available,
+        }));
 
-    res.json({success: true , data: items})
+        res.json({ success: true, data: items });
 
     } catch (error) {
     console.error("GET /api/menu error:", error);
