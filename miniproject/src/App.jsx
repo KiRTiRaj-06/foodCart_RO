@@ -5,13 +5,23 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
+import { apiMe } from "./api/api";
+
 
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const API_BASE_URL =""
+  const API_BASE_URL =" ";
   
+    // useEffect(() => {
+    //   const token = localStorage.getItem("token");
+    //   if (!token) return;
+    //   apiMe()
+    //     .then((data) => setUser(data.user))
+    //     .catch(() => localStorage.removeItem("token")); // token expired/invalid
+    // }, []);
+
+
   const activePage = location.pathname === "/cart" ? "cart" : 
                               location.pathname === "/order" ? "order" : "menu";
 

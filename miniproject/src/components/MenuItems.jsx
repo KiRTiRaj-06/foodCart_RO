@@ -4,47 +4,15 @@ import React, { useEffect, useState } from 'react';
 import ItemContainer from './ItemContainer'
 import { useMenu } from '../context/MenuContext';
 import { useCart } from '../context/CartContext';
-import { getMenu } from "../api/api";
 
 const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
 
-const MENU_ITEMS = [
-{ id: 1, name: "Paneer Tikka",    category: "Starters", price: 220, discount: 0,  description: "Grilled cottage cheese with spiced marinade", 
-	image: "https://images.pexels.com/photos/33430558/pexels-photo-33430558.jpeg"  ,    badge: "Popular",     veg: true,  available: true  },
 
-    { id: 2, name: "Chicken Wings",   category: "Starters", price: 280, discount: 15, description: "Crispy wings tossed in tangy sauce", 
-	image:"https://images.pexels.com/photos/29908653/pexels-photo-29908653.jpeg"   ,            badge: null,          veg: false, available: true  },
-
-    { id: 3, name: "Dal Makhani",     category: "Mains",    price: 180, discount: 0,  description: "Slow-cooked black lentils in buttery gravy", 
-	image: "https://images.pexels.com/photos/28674561/pexels-photo-28674561.jpeg"    ,   badge: "Chef's Pick", veg: true,  available: true  },
-
-    { id: 4, name: "Butter Chicken",  category: "Mains",    price: 320, discount: 10, description: "Tender chicken in rich tomato-cream sauce", 
-        image: 	"https://images.pexels.com/photos/9738981/pexels-photo-9738981.jpeg"   ,     badge: "Popular",     veg: false, available: true  },
-
-    { id: 5, name: "Gulab Jamun",     category: "Desserts", price: 80,  discount: 0,  description: "Soft milk-solid dumplings in rose syrup", 
-        image: 	"https://images.pexels.com/photos/15014918/pexels-photo-15014918.jpeg"   ,     badge: null,          veg: true,  available: true  },
-
-    { id: 6, name: "Mango Lassi",     category: "Drinks",   price: 90,  discount: 0,  description: "Chilled yogurt blended with fresh mango",  
-	    image: "https://images.pexels.com/photos/18142611/pexels-photo-18142611.jpeg"  ,      badge: null,          veg: true,  available: false },
-
-    { id: 7, name: "Veg Biryani",     category: "Mains",    price: 200, discount: 0,  description: "Fragrant basmati with seasonal vegetables", 
-	image: "https://images.pexels.com/photos/35287414/pexels-photo-35287414.jpeg"     ,   badge: null,          veg: true,  available: true  },
-
-    { id: 8, name: "Masala Chai",     category: "Drinks",   price: 40,  discount: 20, description: "Spiced Indian milk tea",      
-	image: "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg"  ,          badge: null,          veg: true,  available: true  }
-];
 
 export default function MenuItems() {
-    const {searchedItem , activeCategory, updateCategory} = useMenu();
+    const {menu, menuLoading, menuError, searchedItem , activeCategory, updateCategory} = useMenu();
     const {addToCart, removeFromCart, getQuantity } = useCart();
     
-    const[menu,setMenu] = useState([])
-
-    useEffect(()=>{
-        getMenu().then((data)=> setMenu(data))
-    },[])
-
-
     const filtered = menu.filter((item) => {
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
     const matchesSearch = item.name
@@ -52,7 +20,6 @@ export default function MenuItems() {
         .includes((typeof searchedItem === "string" ? searchedItem : "").toLowerCase());
     return matchesCategory && matchesSearch;
     });
-
 
 
 return (
@@ -79,12 +46,33 @@ return (
         <div className="flex items-center justify-between mb-4">
         <h2 className="text-zinc-100 font-semibold text-sm tracking-wide">
             {activeCategory === "All" ? "All Dishes" : activeCategory}
-            <span className="ml-2 text-zinc-500 font-normal">({filtered.length})</span>
+            { !menuLoading &&
+            ( <span className="ml-2 text-zinc-500 font-normal">({filtered.length})</span>)}
         </h2>
         </div>
 
+     {/* Loading */}
+    {menuLoading && (
+        <div className="flex-1 flex items-center justify-center">
+             <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+    )}
+
+       {/* Error */}
+    {menuError && !menuLoading && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center py-20">
+        <p className="text-red-400 text-sm">{menuError}</p>
+        <button
+            onClick={() => updateCategory(activeCategory)}
+            className="text-xs text-zinc-400 underline"
+            >
+            Retry
+        </button>
+        </div>
+    )}
+
       {/* Empty State */}
-    {filtered.length === 0 ? (
+    { !menuLoading && !menuError &&filtered.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center py-20 gap-3">
             <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center">
             <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

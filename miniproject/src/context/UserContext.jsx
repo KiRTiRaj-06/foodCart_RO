@@ -1,27 +1,34 @@
 // src/context/UserContext.jsx
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState,useEffect } from "react";
+import {apiLogin, apiRegister, apiMe} from '../api/api'
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
-  // user shape: { name, email, tableNumber } or null when logged out
-
   const [authError, setAuthError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // On mount — if a token exists in localStorage try to restore the session
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    apiMe()
+      .then((data) => setUser(data.user))
+      .catch(() => localStorage.removeItem("token")); // token expired/invalid
+  }, []);
+
 
   // Call your real API here — stub for now
   const login = async ({ email, password }) => {
     setIsLoading(true);
     setAuthError("");
     try {
-      // TODO: replace with real API call
-      // const res = await fetch("/api/login", { method: "POST", body: JSON.stringify({ email, password }) });
-      // const data = await res.json();
-      const mockUser = { name: "Guest", email, tableNumber: 7 };
-      setUser(mockUser);
+      const data = await apiLogin({ email, password });
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
     } catch (err) {
-      setAuthError("Login failed. Please try again.");
+      setAuthError(err.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -31,17 +38,18 @@ export function UserProvider({ children }) {
     setIsLoading(true);
     setAuthError("");
     try {
-      // TODO: replace with real API call
-      const mockUser = { name, email, tableNumber: null };
-      setUser(mockUser);
+      const data = await apiRegister({ username: name, email, password });
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
     } catch (err) {
-      setAuthError("Signup failed. Please try again.");
+      setAuthError(err.message ||"Signup failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
     setUser(null);
     setAuthError("");
   };
