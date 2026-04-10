@@ -5,15 +5,24 @@ const bcrypt  = require("bcrypt");
 const jwt     = require("jsonwebtoken");
 const pool    = require("../db");
 const { verifyToken } = require("../middleware/auth");
+const Joi     = require("joi");
+const { validate } = require("../middleware/validate");
 
 const SALT_ROUNDS = 11;
 
-router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+const registerSchema = Joi.object({
+    username: Joi.string().min(2).max(50).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).max(255).required(),
+});
 
-    if (!username || !email || !password) {
-        return res.status(400).json({ success: false, message: "All fields are required" })
-    }
+const loginSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+});
+
+router.post('/register', validate(registerSchema), async (req, res) => {
+    const { username, email, password } = req.body;
 
     try {
     // Check if email already exists
@@ -39,10 +48,16 @@ router.post('/register', async (req, res) => {
         { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.status(201).json({
         success: true,
         message: "Registered successfully",
-        token,
         user: { id: newId, username, email },
     });
 
@@ -53,12 +68,8 @@ router.post('/register', async (req, res) => {
 })
 
 // ── POST /api/auth/login ──────────────────────────────────────
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
 const { email, password } = req.body;
-
-if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email and password required" });
-}
 
 try {
     const result = await pool.query(
@@ -82,10 +93,16 @@ try {
         { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.json({
         success: true,
         message: "Login successful",
-        token,
         user: { id: user.id, username: user.username, email: user.email },
     });
 } catch (err) {
@@ -109,6 +126,12 @@ try {
     console.error("GET /api/auth/me error:", err);
     res.status(500).json({ success: false, message: "Failed to fetch user" });
     }
+});
+
+// ── POST /api/auth/logout ──────────────────────────────────────
+router.post("/logout", (req, res) => {
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out successfully" });
 });
 
 module.exports = router;

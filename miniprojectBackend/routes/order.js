@@ -3,6 +3,8 @@ const express  = require("express");
 const router   = express.Router();
 const pool     = require("../db");
 const { verifyToken, initCart } = require("../middleware/auth");
+const Joi      = require("joi");
+const { validate } = require("../middleware/validate");
 
 // All order routes require a logged-in user
 router.use(verifyToken);
@@ -10,7 +12,11 @@ router.use(verifyToken);
 // ── POST /api/order/place ─────────────────────────────────────
 // Takes cart from session, saves to order_history, clears session cart.
 // Body: { tableNumber }   (cart is read from session, not body)
-router.post("/place", initCart, async (req, res) => {
+const placeOrderSchema = Joi.object({
+    tableNumber: Joi.number().min(1).max(999).optional().allow(null)
+});
+
+router.post("/place", validate(placeOrderSchema), initCart, async (req, res) => {
     const { tableNumber } = req.body;
     const cart = req.session.cart;
 

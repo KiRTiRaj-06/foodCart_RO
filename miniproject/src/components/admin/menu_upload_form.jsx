@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiMenuAdd } from "../../api/api";
 
 export default function MenuUploadForm() {
   const [imagePreview, setImagePreview] = useState(null);
@@ -10,8 +11,9 @@ export default function MenuUploadForm() {
     category: "",
     price: "",
     discount: "",
-    desc: "",
+    descrip: "",
     badge: "",
+    imageUrl: "",
     veg: false,
     available: true,
   });
@@ -47,15 +49,34 @@ export default function MenuUploadForm() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      ...formData,
-      image: imageFile,
+      name: formData.name,
+      category: formData.category,
+      price: parseInt(formData.price),
+      discount: parseInt(formData.discount) || 0,
+      descrip: formData.desc, // map frontend desc to backend schema descrip
+      image: formData.imageUrl || "", // map URL field
+      badge: formData.badge,
+      veg: formData.veg,
+      available: formData.available,
     };
 
-    console.log("FINAL PAYLOAD:", payload);
+    try {
+      await apiMenuAdd(payload);
+      alert("Menu item uploaded successfully!");
+      
+      // Reset form
+      setFormData({
+        id: "", name: "", category: "", price: "", discount: "", desc: "", badge: "", imageUrl: "", veg: false, available: true
+      });
+      setImagePreview(null);
+      setImageFile(null);
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
   };
 
   return (
@@ -75,14 +96,16 @@ export default function MenuUploadForm() {
           onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-cyan-600 rounded-xl p-6 text-center hover:border-[#d931ba] transition"
         >
-          {imagePreview ? (
+          {imagePreview || formData.imageUrl ? (
             <img
-              src={imagePreview}
+              src={imagePreview || formData.imageUrl}
               className="mx-auto h-40 rounded-lg object-contain"
               alt="preview"
+              onError={(e) => e.target.style.display = 'none'}
+              onLoad={(e) => e.target.style.display = 'block'}
             />
           ) : (
-            <p className="text-gray-400">
+            <p className="text-gray-400 mb-4">
               Drag & Drop IMAGE here OR select manually
             </p>
           )}
@@ -91,8 +114,19 @@ export default function MenuUploadForm() {
             type="file"
             accept="image/*"
             onChange={handleImageSelect}
-            className="mt-4 text-white"
+            className="text-white text-sm"
           />
+        </div>
+
+        <div className="flex flex-col gap-2">
+            <label className="text-cyan-400 text-sm font-semibold">Or enter Image URL (Recomended)</label>
+            <input
+              name="imageUrl"
+              placeholder="https://example.com/image.jpg"
+              value={formData.imageUrl}
+              onChange={handleInputChange}
+              className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white w-full"
+            />
         </div>
 
         {/* INPUT GRID */}

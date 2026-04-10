@@ -2,14 +2,10 @@
 // Central place for all HTTP calls to the backend.
 // Import whichever functions you need in your context files.
 
-const BASE = "http://localhost:5000/api";
-
-// ── helpers ──────────────────────────────────────────────────
-const getToken = () => localStorage.getItem("token");
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const headers = (extra = {}) => ({
     "Content-Type": "application/json",
-    ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
     ...extra,
 });
 
@@ -28,9 +24,8 @@ const request = async (method, path, body) => {
 // ════════════════════════════════════════════════════════════
 //  MENU
 // ════════════════════════════════════════════════════════════
-export const fetchMenu = () => {
-    return request("GET", `/menu`);
-};
+export const fetchMenu = () => request("GET", "/menu");
+export const apiMenuAdd = (body) => request("POST", "/menu", body);
 
 // ════════════════════════════════════════════════════════════
 //  AUTH
@@ -38,6 +33,7 @@ export const fetchMenu = () => {
 export const apiRegister = (body) => request("POST", "/auth/register", body);
 export const apiLogin    = (body) => request("POST", "/auth/login",    body);
 export const apiMe       = ()     => request("GET",  "/auth/me");
+export const apiLogout   = ()     => request("POST", "/auth/logout");
 
 // ════════════════════════════════════════════════════════════
 //  CART  (session-backed)

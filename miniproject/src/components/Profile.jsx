@@ -20,10 +20,24 @@ function Profile() {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 flex flex-col gap-6">
+    <div className="max-w-6xl mx-auto py-8 px-4 flex flex-col gap-6">
+      
+      {/* Top action row */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-sm font-semibold text-zinc-300 hover:text-white transition-colors duration-200"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Exit to Menu
+        </button>
+      </div>
 
-      {/* ── Profile Card ──────────────────────────────────── */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* ── Profile Card ──────────────────────────────────── */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full md:w-1/3 sticky top-24 shrink-0">
         <h2 className="text-zinc-100 font-bold text-lg mb-5 tracking-wide">My Profile</h2>
 
         {/* Avatar + name */}
@@ -71,7 +85,7 @@ function Profile() {
       </div>
 
       {/* ── Order History ─────────────────────────────────── */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full md:flex-1">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-zinc-100 font-bold text-lg tracking-wide">Order History</h2>
           {orders.length > 0 && (
@@ -161,6 +175,8 @@ function Profile() {
             ))}
           </div>
         )}
+      </div>
+      
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 // src/context/UserContext.jsx
 import { createContext, useContext, useState,useEffect } from "react";
-import {apiLogin, apiRegister, apiMe} from '../api/api'
+import {apiLogin, apiRegister, apiMe, apiLogout} from '../api/api'
 
 const UserContext = createContext(null);
 
@@ -25,14 +25,11 @@ export function UserProvider({ children }) {
       return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setAuthLoading(false);
-      return;
-    }
+    // Always attempt to restore user via apiMe() for HttpOnly cookies.
+    // If it fails/401s, they just aren't logged in.
     apiMe()
       .then((data) => setUser(data.user))
-      .catch(() => localStorage.removeItem("token"))
+      .catch(() => setUser(null))
       .finally(() => setAuthLoading(false));
   }, []);
 
@@ -57,7 +54,6 @@ export function UserProvider({ children }) {
 
     try {
       const data = await apiLogin({ email, password });
-      localStorage.setItem("token", data.token);
       setUser(data.user);
       setTableNumber(Math.floor(Math.random() * 30 + 1));
     } catch (err) {
@@ -73,7 +69,6 @@ export function UserProvider({ children }) {
     setAuthError("");
     try {
       const data = await apiRegister({ username: name, email, password });
-      localStorage.setItem("token", data.token);
       setUser(data.user);
       setTableNumber(Math.floor(Math.random() * 30 + 1));
     } catch (err) {
@@ -84,9 +79,13 @@ export function UserProvider({ children }) {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
     localStorage.removeItem("admin");
+    try {
+      await apiLogout();
+    } catch (e) {
+      // Ignored
+    }
     setUser(null);
     setAuthError("");
     setTableNumber(0);

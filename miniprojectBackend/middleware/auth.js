@@ -7,8 +7,11 @@ const jwt = require("jsonwebtoken");
 // Reads the Bearer token from Authorization header.
 // Attaches decoded payload to req.user on success.
 const verifyToken = (req, res, next) => {
-const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // "Bearer <token>"
+let token = req.cookies?.token;
+if (!token) {
+    const authHeader = req.headers["authorization"];
+    token = authHeader && authHeader.split(" ")[1]; // "Bearer <token>"
+}
 
 if (!token) {
     return res.status(401).json({ success: false, message: "No token provided" });

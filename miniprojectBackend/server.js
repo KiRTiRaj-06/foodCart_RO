@@ -1,6 +1,9 @@
 const express = require('express')
 const cors = require('cors')
 const session= require('express-session')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000;
@@ -13,6 +16,31 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// ── CSRF Origin Verification ──────────────────────────────────
+app.use((req, res, next) => {
+    // Only verify state-changing requests
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
+        const origin = req.headers.origin;
+        const expectedOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+        // If an origin is provided and doesn't match our frontend, heavily suspect CSRF
+        if (origin && origin !== expectedOrigin) {
+            return res.status(403).json({ success: false, message: "Cross-Site Request Blocked" });
+        }
+    }
+    next();
+});
+
+// ── Security Middlewares ──────────────────────────────────────
+app.use(helmet());
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 150, // limit each IP to 150 requests per windowMs
+    message: { success: false, message: "Too many requests from this IP, please try again after 15 minutes" }
+});
+app.use("/api", limiter);
 
 // ── Session (cart lives here for 24 hours) ────────────────────
 app.use(
