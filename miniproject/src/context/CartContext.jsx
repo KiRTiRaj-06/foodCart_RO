@@ -32,7 +32,7 @@ export function CartProvider({ children }) {
       return [...prev, { ...item, quantity: 1 }];
     });
     try {
-      const data = await apiCartAdd({ id: item.id, name: item.name, price: item.price, discount: item.discount || 0, quantity: 1 });
+      const data = await apiCartAdd({ id: item.id, name: item.name, price: item.price, discount: item.discount || 0, image: item.image || "", quantity: 1 });
       sync(data);
     }catch{}
   };
@@ -57,7 +57,7 @@ export function CartProvider({ children }) {
     );
     try {
       const item = cartItems.find((i) => i.id === id);
-      if (item) { const data = await apiCartAdd({ id, name: item.name, price: item.price, discount: item.discount || 0, quantity: 1 }); sync(data); }
+      if (item) { const data = await apiCartAdd({ id, name: item.name, price: item.price, discount: item.discount || 0, image: item.image || "", quantity: 1 }); sync(data); }
     } catch {}
   };
 
