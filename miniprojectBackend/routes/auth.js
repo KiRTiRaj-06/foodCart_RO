@@ -8,54 +8,42 @@ const { verifyToken } = require("../middleware/auth");
 
 const SALT_ROUNDS = 11;
 
-// ── REGISTER ────────────────────────────────────────────────
-router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+router.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "All fields are required",
-    });
-  }
-
-  try {
-    // Check if email exists
-    const existing = await pool.query(
-      "SELECT id FROM users WHERE email = $1",
-      [email]
-    );
-
-    if (existing.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Email already registered",
-      });
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: "All fields are required" })
     }
 
-    // Hash password
+    try {
+    // Check if email already exists
+    const existing = await pool.query(
+        "SELECT id FROM users WHERE email = $1", [email]
+    );
+    if (existing.rows.length > 0) {
+        return res.status(409).json({ success: false, message: "Email already registered" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Insert user
     const result = await pool.query(
-      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email",
-      [username, email, hashedPassword]
+        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
+        [username, email, hashedPassword]
     );
 
-    const user = result.rows[0];
+    const newId = result.rows[0].id;
 
-    // Generate token
     const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+        { id: newId, username, email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     res.status(201).json({
-      success: true,
-      message: "Registered successfully",
-      token,
-      user,
+        success: true,
+        message: "Registered successfully",
+        token,
+        user: { id: newId, username, email },
     });
 
   } catch (err) {
@@ -79,21 +67,16 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  try {
+try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
+      "SELECT * FROM users WHERE email = $1", [email]
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+        return res.status(401).json({ success: false, message: "Invalid credentials or email doesn't exist " });
     }
 
     const user = result.rows[0];
-
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
@@ -132,25 +115,16 @@ router.post("/login", async (req, res) => {
 
 // ── GET CURRENT USER ─────────────────────────────────────────
 router.get("/me", verifyToken, async (req, res) => {
-  try {
+try {
     const result = await pool.query(
-      "SELECT id, username, email, created_at FROM users WHERE id = $1",
-      [req.user.id]
+        "SELECT id, username, email, created_at FROM users WHERE id = $1",
+        [req.user.id]
     );
-
     if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+        return res.status(404).json({ success: false, message: "User not found" });
     }
-
-    res.json({
-      success: true,
-      user: result.rows[0],
-    });
-
-  } catch (err) {
+    res.json({ success: true, user: result.rows[0] });
+} catch (err) {
     console.error("GET /api/auth/me error:", err);
     res.status(500).json({
       success: false,

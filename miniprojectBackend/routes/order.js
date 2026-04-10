@@ -30,10 +30,11 @@ router.post("/place", initCart, async (req, res) => {
     const total = parseFloat((subtotal + tax).toFixed(2));
 
 try {
-    const [result] = await pool.execute(
+    const result = await pool.query(
         `INSERT INTO order_history
         (user_id, items, subtotal, tax, total, table_number, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'placed')`,
+        VALUES ($1, $2, $3, $4, $5, $6, 'placed')
+        RETURNING id`,
     [
         req.user.id,
         JSON.stringify(cart),
@@ -44,6 +45,8 @@ try {
     ]
     );
 
+    const newId = result.rows[0].id;
+
     // Clear session cart after successful order
     req.session.cart = [];
 
@@ -51,7 +54,7 @@ try {
         success: true,
         message: "Order placed successfully",
         order: {
-            id: result.insertId,
+            id: newId,
             user_id: req.user.id,
             items:  cart,
         subtotal,
@@ -71,16 +74,16 @@ try {
 // Returns all past orders for the logged-in user, newest first
 router.get("/history", async (req, res) => {
     try {
-    const [rows] = await pool.execute(
+    const result = await pool.query(
         `SELECT id, items, subtotal, tax, total, table_number, status, placed_at
         FROM order_history
-        WHERE user_id = ?
+        WHERE user_id = $1
         ORDER BY placed_at DESC`,
         [req.user.id]
     );
 
     // Parse the JSON items column back to an array
-    const orders = rows.map((row) => ({
+    const orders = result.rows.map((row) => ({
         ...row,
         items: typeof row.items === "string" ? JSON.parse(row.items) : row.items,
     }));
@@ -96,20 +99,20 @@ router.get("/history", async (req, res) => {
 // Single order detail — only if it belongs to the logged-in user
 router.get("/:id", async (req, res) => {
     try {
-    const [rows] = await pool.execute(
+    const result = await pool.query(
         `SELECT id, items, subtotal, tax, total, table_number, status, placed_at
         FROM order_history
-        WHERE id = ? AND user_id = ?`,
+        WHERE id = $1 AND user_id = $2`,
         [req.params.id, req.user.id]
     );
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
         return res.status(404).json({ success: false, message: "Order not found" });
     }
 
     const order = {
-        ...rows[0],
-        items: typeof rows[0].items === "string" ? JSON.parse(rows[0].items) : rows[0].items,
+        ...result.rows[0],
+        items: typeof result.rows[0].items === "string" ? JSON.parse(result.rows[0].items) : result.rows[0].items,
     };
 
     res.json({ success: true, data: order });
