@@ -3,7 +3,7 @@ const router  = express.Router();
 const pool    = require("../db");
 
 // GET /api/menu
-router.get("/menu", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const query = "SELECT * FROM menu";
     const result = await pool.query(query); // ✅ PostgreSQL syntax

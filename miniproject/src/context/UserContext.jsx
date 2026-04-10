@@ -30,9 +30,14 @@ export function UserProvider({ children }) {
       return;
     }
     apiMe()
-      .then((data) => setUser(data.user))
-      .catch(() => localStorage.removeItem("token"))
-      .finally(() => setAuthLoading(false));
+    .then((data) => {
+      if (data && data.user) {
+        setUser(data.user);
+      } else {
+        localStorage.removeItem("token");
+      }
+    })
+    .finally(() => setAuthLoading(false));
   }, []);
 
 

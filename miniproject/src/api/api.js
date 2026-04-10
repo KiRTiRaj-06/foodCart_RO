@@ -7,11 +7,17 @@ const BASE = "http://localhost:5000/api";
 // ── helpers ──────────────────────────────────────────────────
 const getToken = () => localStorage.getItem("token");
 
-const headers = (extra = {}) => ({
-    "Content-Type": "application/json",
-    ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
-    ...extra,
-});
+const headers = (extra = {}) => {
+    const token = getToken();
+
+    console.log("TOKEN:", token); // 🔥 ADD HERE
+
+    return {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...extra,
+    };
+};
 
 const request = async (method, path, body) => {
     const res = await fetch(`${BASE}${path}`, {
@@ -37,7 +43,14 @@ export const fetchMenu = () => {
 // ════════════════════════════════════════════════════════════
 export const apiRegister = (body) => request("POST", "/auth/register", body);
 export const apiLogin    = (body) => request("POST", "/auth/login",    body);
-export const apiMe       = ()     => request("GET",  "/auth/me");
+export const apiMe = async () => {
+  try {
+    const res = await request("GET", "/auth/me");
+    return res;
+  } catch (err) {
+    return null; 
+  }
+};
 
 // ════════════════════════════════════════════════════════════
 //  CART  (session-backed)
