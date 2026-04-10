@@ -11,4 +11,8 @@ const pool = new Pool({
     max:      10,
 });
 
+pool.connect()
+  .then(() => console.log("PostgreSQL connected ✅"))
+  .catch(err => console.error("DB connection error:", err));
+
 module.exports = pool;

@@ -1,9 +1,9 @@
 // backend/routes/auth.js
 const express = require("express");
-const router  = express.Router();
-const bcrypt  = require("bcrypt");
-const jwt     = require("jsonwebtoken");
-const pool    = require("../db");
+const router = express.Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const pool = require("../db");
 const { verifyToken } = require("../middleware/auth");
 const Joi     = require("joi");
 const { validate } = require("../middleware/validate");
@@ -61,11 +61,14 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         user: { id: newId, username, email },
     });
 
-    } catch (error) {
-    console.error("POST /api/auth/register error:", error);
-    res.status(500).json({ success: false, message: "Registration failed" });
-    }
-})
+  } catch (err) {
+    console.error("POST /api/auth/register error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+    });
+  }
+});
 
 // ── POST /api/auth/login ──────────────────────────────────────
 router.post("/login", validate(loginSchema), async (req, res) => {
@@ -84,13 +87,16 @@ try {
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-        return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
 
     const token = jwt.sign(
-        { id: user.id, username: user.username, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+      { id: user.id, username: user.username, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     res.cookie('token', token, {
@@ -105,13 +111,18 @@ try {
         message: "Login successful",
         user: { id: user.id, username: user.username, email: user.email },
     });
-} catch (err) {
+
+  } catch (err) {
     console.error("POST /api/auth/login error:", err);
-    res.status(500).json({ success: false, message: "Login failed" });
-}
+    res.status(500).json({
+      success: false,
+      message: "Login failed",
+    });
+  }
 });
 
-// ── GET /api/auth/me  — verify token + return user info ───────
+
+// ── GET CURRENT USER ─────────────────────────────────────────
 router.get("/me", verifyToken, async (req, res) => {
 try {
     const result = await pool.query(
@@ -124,8 +135,11 @@ try {
     res.json({ success: true, user: result.rows[0] });
 } catch (err) {
     console.error("GET /api/auth/me error:", err);
-    res.status(500).json({ success: false, message: "Failed to fetch user" });
-    }
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+    });
+  }
 });
 
 // ── POST /api/auth/logout ──────────────────────────────────────

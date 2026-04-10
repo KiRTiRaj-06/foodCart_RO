@@ -29,11 +29,14 @@ router.get('/', async (req, res) => {
 
         res.json({ success: true, data: items });
 
-    } catch (error) {
+  } catch (error) {
     console.error("GET /api/menu error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch menu" });
-    }
-})
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch menu",
+    });
+  }
+});
 
 // ── POST /api/menu ───────────────────────────────────────────
 // Creates a new menu item
