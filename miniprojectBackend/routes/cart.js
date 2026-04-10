@@ -14,9 +14,9 @@ router.get("/", (req, res) => {
 });
 
 // ── POST /api/cart/add ────────────────────────────────────────
-// Body: { id, name, price, quantity, discount }
+// Body: { id, name, price, quantity, discount, image }
 router.post("/add", (req, res) => {
-  const { id, name, price, quantity = 1, discount = 0 } = req.body;
+  const { id, name, price, quantity = 1, discount = 0, image = "" } = req.body;
 
   if (!id || !name || price == null) {
     return res.status(400).json({ success: false, message: "id, name and price are required" });
@@ -27,8 +27,9 @@ router.post("/add", (req, res) => {
 
   if (existing) {
     existing.quantity += quantity;
+    if (image && !existing.image) existing.image = image; // backfill image if missing
   } else {
-    cart.push({ id, name, price, quantity, discount });
+    cart.push({ id, name, price, quantity, discount, image });
   }
 
   req.session.cart = cart;

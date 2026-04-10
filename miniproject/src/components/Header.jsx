@@ -23,7 +23,7 @@ function Header() {
                         </div>
                         }
                 <span className="text-white font-semibold text-sm tracking-wide hidden sm:block">
-                        Eshcalix
+                        Raya's Kitchen
                 </span>
                     </Link>
             </div>

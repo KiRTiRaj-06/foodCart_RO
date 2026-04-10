@@ -44,13 +44,13 @@ export default function WelcomeHero() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
         {/* Decorative line */}
-        <div className="h-px w-24 bg-primary" />
+        <div className="h-px w-24 bg-white" />
 
         <p
           className="text-sm uppercase tracking-[0.4em] text-muted-foreground"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          Est. 2024
+          Est. 2026
         </p>
 
         <h1
@@ -79,7 +79,7 @@ export default function WelcomeHero() {
         </Link>
 
         {/* Decorative line */}
-        <div className="h-px w-24 bg-primary" />
+        <div className="h-px w-24 bg-white" />
 
         {/* Slide indicators */}
         <div className="mt-4 flex gap-2">
