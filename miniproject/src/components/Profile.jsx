@@ -25,7 +25,7 @@ function Profile() {
       {/* Top action row */}
       <div className="flex justify-end">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/menu")}
           className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-sm font-semibold text-zinc-300 hover:text-white transition-colors duration-200"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

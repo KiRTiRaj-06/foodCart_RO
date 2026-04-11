@@ -15,7 +15,7 @@ export default function WelcomeHero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 4000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -44,10 +44,10 @@ export default function WelcomeHero() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
         {/* Decorative line */}
-        <div className="h-px w-24 bg-white" />
+        <div className="h-px w-24 bg-[#FFFDD0]" />
 
         <p
-          className="text-sm uppercase tracking-[0.4em] text-muted-foreground"
+          className="text-sm uppercase tracking-[0.4em] text-muted-foreground text-[#e2c2b1]"
           style={{ fontFamily: "var(--font-body)" }}
         >
           Est. 2026
@@ -71,7 +71,7 @@ export default function WelcomeHero() {
 
         <Link
           to="/login"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-lg font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-[#FFFDD0] text-lg font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <div className="p-2 m-2 bg-amber-500 border rounded-3xl">
           GET STARTED
@@ -79,7 +79,7 @@ export default function WelcomeHero() {
         </Link>
 
         {/* Decorative line */}
-        <div className="h-px w-24 bg-white" />
+        <div className="h-px w-24 bg-[#FFFDD0]" />
 
         {/* Slide indicators */}
         <div className="mt-4 flex gap-2">

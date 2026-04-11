@@ -55,7 +55,7 @@ export default function AdminDashboard() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar */}
-        <aside className="w-56 bg-zinc-900 border-r border-zinc-800 flex flex-col py-6 px-3 shrink-0">
+        <aside className="w-50 bg-zinc-900 border-r border-zinc-800 flex flex-col py-6 px-3 shrink-0">
           <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-semibold px-3 mb-3">Sections</p>
           <nav className="flex flex-col gap-1">
             {NAV_ITEMS.map(({ label, path }) => (

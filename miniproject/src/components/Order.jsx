@@ -6,7 +6,7 @@ export default function Order() {
   const location = useLocation();
   const navigate = useNavigate();
   const order = location.state?.order;
-
+  const time = Math.floor(Math.random() *(30-18)+18)
   // If someone navigates here directly without placing an order
   if (!order) {
     return (
@@ -44,7 +44,7 @@ export default function Order() {
           <p className="text-zinc-400 text-sm leading-relaxed">
             Your order has been placed successfully.
             <br />
-            It will be on your table in about <span className="text-amber-400 font-bold">20 minutes</span>.
+            It will be on your table in about <span className="text-amber-400 font-bold">{time} minutes</span>.
           </p>
         </div>
 

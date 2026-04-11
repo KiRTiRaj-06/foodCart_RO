@@ -25,7 +25,7 @@ export default function AllMenuDetails() {
         <table className="w-full text-left">
           <thead className="bg-zinc-900">
             <tr>
-              {["ID", "Name", "Category", "Price", "Discount", "Veg", "Available"].map((h) => (
+              {["ID","Name", "Category", "Badge","Price", "Discount", "Veg", "Available","Image"].map((h) => (
                 <th key={h} className="px-4 py-3 text-zinc-500 text-xs font-semibold uppercase tracking-widest">{h}</th>
               ))}
             </tr>
@@ -38,6 +38,7 @@ export default function AllMenuDetails() {
                 <td className="px-4 py-3">
                   <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-xs">{item.category}</span>
                 </td>
+                <td className="px-4 py-3 text-zinc-400 text-sm">{item.badge || 0}%</td>
                 <td className="px-4 py-3 text-amber-400 text-sm font-semibold">₹{item.price}</td>
                 <td className="px-4 py-3 text-zinc-400 text-sm">{item.discount || 0}%</td>
                 <td className="px-4 py-3">
@@ -47,6 +48,9 @@ export default function AllMenuDetails() {
                   <span className={`text-xs px-2 py-0.5 rounded-full ${item.available ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400"}`}>
                     {item.available ? "Yes" : "No"}
                   </span>
+                </td>
+                <td className="px-4 py-3 text-zinc-400 text-sm">
+                  <img src={item.image} alt="" className="w-10 h-10 rounded-3xl" />
                 </td>
               </tr>
             ))}
