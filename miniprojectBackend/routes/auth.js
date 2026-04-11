@@ -43,7 +43,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
     const newId = result.rows[0].id;
 
     const token = jwt.sign(
-        { id: newId, username, email },
+        { id: newId, username, email, is_admin: false },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
@@ -58,7 +58,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
     res.status(201).json({
         success: true,
         message: "Registered successfully",
-        user: { id: newId, username, email },
+        user: { id: newId, username, email, is_admin: false },
     });
 
   } catch (err) {
@@ -94,9 +94,9 @@ try {
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+        { id: user.id, username: user.username, email: user.email, is_admin: user.is_admin },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     res.cookie('token', token, {
@@ -109,7 +109,7 @@ try {
     res.json({
         success: true,
         message: "Login successful",
-        user: { id: user.id, username: user.username, email: user.email },
+        user: { id: user.id, username: user.username, email: user.email, is_admin: user.is_admin },
     });
 
   } catch (err) {
@@ -126,7 +126,7 @@ try {
 router.get("/me", verifyToken, async (req, res) => {
 try {
     const result = await pool.query(
-        "SELECT id, username, email, created_at FROM users WHERE id = $1",
+        "SELECT id, username, email, is_admin, created_at FROM users WHERE id = $1",
         [req.user.id]
     );
     if (result.rows.length === 0) {

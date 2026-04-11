@@ -1,9 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function ProtectedRoute() {
-  const isAdmin = localStorage.getItem("admin");
+  const { user, authLoading } = useUser();
 
-  if (!isAdmin) {
+  if (authLoading) return null; // Wait for auth resolution
+
+  if (!user || !user.is_admin) {
     return <Navigate to="/login" replace />;
   }
 

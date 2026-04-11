@@ -4,9 +4,6 @@ import {apiLogin, apiRegister, apiMe, apiLogout} from '../api/api'
 
 const UserContext = createContext(null);
 
-// Admin credentials from .env (VITE_ prefix required by Vite)
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-const ADMIN_PASS  = import.meta.env.VITE_ADMIN_PASS;
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -15,15 +12,8 @@ export function UserProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(true);
   const [tableNumber , setTableNumber] = useState(0)
 
-  // On mount — if a token exists in localStorage try to restore the session
+  // On mount — try to restore the session
   useEffect(() => {
-    // Restore admin session
-    const isAdmin = localStorage.getItem("admin");
-    if (isAdmin) {
-      setUser({ id: 0, username: "Admin", email: ADMIN_EMAIL });
-      setAuthLoading(false);
-      return;
-    }
 
     // Always attempt to restore user via apiMe() for HttpOnly cookies.
     // If it fails/401s, they just aren't logged in.
@@ -39,23 +29,15 @@ export function UserProvider({ children }) {
     setIsLoading(true);
     setAuthError("");
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-      localStorage.setItem("admin", "true");
-      setUser({ id: 0, username: "Admin", email: ADMIN_EMAIL });
-      setIsLoading(false);
-      return "admin";   // signal to Login.jsx to navigate to /admin
-    }
-
-    if (email === ADMIN_EMAIL) {
-      setAuthError("Invalid admin password");
-      setIsLoading(false);
-      throw new Error("Invalid admin password");
-    }
-
     try {
       const data = await apiLogin({ email, password });
       setUser(data.user);
       setTableNumber(Math.floor(Math.random() * 30 + 1));
+      
+      // Navigate to admin dash if robustly marked as admin in Postgres
+      if (data.user.is_admin) {
+        return "admin";
+      }
     } catch (err) {
       setAuthError(err.message || "Login failed. Please try again.");
       throw err;
@@ -80,7 +62,6 @@ export function UserProvider({ children }) {
   };
 
   const logout = async () => {
-    localStorage.removeItem("admin");
     try {
       await apiLogout();
     } catch (e) {
