@@ -52,20 +52,24 @@ export default function MenuUploadForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      name: formData.name,
-      category: formData.category,
-      price: parseInt(formData.price),
-      discount: parseInt(formData.discount) || 0,
-      descrip: formData.desc, // map frontend desc to backend schema descrip
-      image: formData.imageUrl || "", // map URL field
-      badge: formData.badge,
-      veg: formData.veg,
-      available: formData.available,
-    };
+    const fd = new FormData();
+    fd.append("name", formData.name);
+    fd.append("category", formData.category);
+    fd.append("price", parseInt(formData.price) || 0);
+    fd.append("discount", parseInt(formData.discount) || 0);
+    fd.append("descrip", formData.desc || "");
+    fd.append("badge", formData.badge || "");
+    fd.append("veg", formData.veg);
+    fd.append("available", formData.available);
+
+    if (imageFile) {
+      fd.append("image", imageFile);
+    } else if (formData.imageUrl) {
+      fd.append("image", formData.imageUrl);
+    }
 
     try {
-      await apiMenuAdd(payload);
+      await apiMenuAdd(fd);
       alert("Menu item uploaded successfully!");
       
       // Reset form
@@ -135,7 +139,6 @@ export default function MenuUploadForm() {
           {[
             "id",
             "name",
-            "category",
             "price",
             "discount",
             "badge",
@@ -145,9 +148,21 @@ export default function MenuUploadForm() {
               name={field}
               placeholder={field.toUpperCase()}
               onChange={handleInputChange}
-              className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white"
+              className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white placeholder-gray-500"
             />
           ))}
+
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange}
+            className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white appearance-none"
+          >
+            <option value="" disabled>SELECT CATEGORY</option>
+            {["Starters", "Soups", "Chinese", "Mains", "Biryani", "Drinks", "Rolls & Wraps", "Waffles & Cake", "Desserts"].map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
 
         {/* DESCRIPTION */}

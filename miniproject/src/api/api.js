@@ -10,11 +10,15 @@ const headers = (extra = {}) => ({
 });
 
 const request = async (method, path, body) => {
+    const isFormData = body instanceof FormData;
+    const reqHeaders = isFormData ? {} : headers(); // Browser automatically adds boundary for FormData
+    const reqBody = isFormData ? body : (body ? JSON.stringify(body) : undefined);
+
     const res = await fetch(`${BASE}${path}`, {
         method,
-        headers: headers(),
-        credentials: "include",       // send session cookie for cart
-        ...(body ? { body: JSON.stringify(body) } : {}),
+        headers: reqHeaders,
+        credentials: "include",
+        ...(reqBody ? { body: reqBody } : {}),
 });
     const data = await res.json();
     if (!data.success) throw new Error(data.message || "Request failed");
@@ -26,6 +30,8 @@ const request = async (method, path, body) => {
 // ════════════════════════════════════════════════════════════
 export const fetchMenu = () => request("GET", "/menu");
 export const apiMenuAdd = (body) => request("POST", "/menu", body);
+export const apiMenuUpdate = (id, body) => request("PUT", `/menu/${id}`, body);
+export const apiMenuDelete = (id) => request("DELETE", `/menu/${id}`);
 
 // ════════════════════════════════════════════════════════════
 //  AUTH

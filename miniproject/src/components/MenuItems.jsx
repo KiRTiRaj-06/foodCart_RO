@@ -5,7 +5,7 @@ import ItemContainer from './ItemContainer'
 import { useMenu } from '../context/MenuContext';
 import { useCart } from '../context/CartContext';
 
-const CATEGORIES = ["All", "Starters", "Mains", "Desserts", "Drinks"];
+const CATEGORIES = ["All", "Starters","Soups","Chinese","Mains","Biryani","Drinks","Rolls & Wraps","Waffles & Cake","Desserts"];
 
 
 

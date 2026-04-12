@@ -4,6 +4,7 @@ const session= require('express-session')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
+const path = require('path')
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Serve static uploads
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // ── CSRF Origin Verification ──────────────────────────────────
 app.use((req, res, next) => {

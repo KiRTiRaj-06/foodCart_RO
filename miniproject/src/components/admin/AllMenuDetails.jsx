@@ -1,18 +1,36 @@
 // src/components/admin/AllMenuDetails.jsx
 import React, { useState, useEffect } from "react";
-import { fetchMenu } from "../../api/api";
+import { fetchMenu, apiMenuDelete, apiMenuUpdate } from "../../api/api";
+
+const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
 
 export default function AllMenuDetails() {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editItem, setEditItem] = useState(null);
 
-  useEffect(() => {
+  const loadMenu = () => {
+    setLoading(true);
     fetchMenu()
       .then((data) => setMenuItems(data.data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadMenu();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this menu item?")) return;
+    try {
+      await apiMenuDelete(id);
+      setMenuItems((prev) => prev.filter(i => i.id !== id));
+    } catch (err) {
+      alert("Error deleting: " + err.message);
+    }
+  };
 
   if (loading) return <Spinner />;
   if (error) return <ErrorMsg message={error} />;
@@ -25,7 +43,7 @@ export default function AllMenuDetails() {
         <table className="w-full text-left">
           <thead className="bg-zinc-900">
             <tr>
-              {["ID","Name", "Category", "Badge","Price", "Discount", "Veg", "Available","Image"].map((h) => (
+              {["ID","Name", "Category", "Badge","Price", "Discount", "Veg", "Available","Image", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3 text-zinc-500 text-xs font-semibold uppercase tracking-widest">{h}</th>
               ))}
             </tr>
@@ -50,15 +68,120 @@ export default function AllMenuDetails() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-zinc-400 text-sm">
-                  <img src={item.image} alt="" className="w-10 h-10 rounded-3xl" />
+                  <img src={item.image?.startsWith('/') ? BASE_URL + item.image : (item.image || "/fallback.png")} alt="" className="w-10 h-10 rounded-3xl object-cover" />
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditItem(item)} className="px-3 py-1 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 text-xs font-bold rounded-lg transition-colors">Edit</button>
+                    <button onClick={() => handleDelete(item.id)} className="px-3 py-1 bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold rounded-lg transition-colors">Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {editItem && (
+        <EditModal 
+            item={editItem} 
+            onClose={() => setEditItem(null)} 
+            onRefresh={loadMenu}
+            baseUrl={BASE_URL}
+        />
+      )}
     </div>
   );
+}
+
+function EditModal({ item, onClose, onRefresh, baseUrl }) {
+  const [formData, setFormData] = useState({
+    name: item.name || "",
+    category: item.category || "",
+    price: item.price || "",
+    discount: item.discount || "",
+    descrip: item.descrip || "",
+    badge: item.badge || "",
+    veg: item.veg ?? true,
+    available: item.available ?? true,
+    imageUrl: item.image || "",
+  });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(item.image?.startsWith('/') ? baseUrl + item.image : item.image);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData();
+    fd.append("name", formData.name);
+    fd.append("category", formData.category);
+    fd.append("price", parseInt(formData.price) || 0);
+    fd.append("discount", parseInt(formData.discount) || 0);
+    fd.append("descrip", formData.descrip || "");
+    fd.append("badge", formData.badge || "");
+    fd.append("veg", formData.veg);
+    fd.append("available", formData.available);
+
+    if (imageFile) {
+      fd.append("image", imageFile);
+    } else if (formData.imageUrl) {
+      fd.append("image", formData.imageUrl);
+    }
+
+    try {
+      await apiMenuUpdate(item.id, fd);
+      onRefresh();
+      onClose();
+    } catch (err) { alert("Update failed: " + err.message); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 flex justify-center items-center p-4 backdrop-blur-sm">
+      <div className="bg-[#0f0f0f] border border-amber-500/30 w-full max-w-2xl rounded-2xl shadow-xl shadow-amber-500/5 p-6 max-h-[90vh] overflow-y-auto relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-zinc-500 hover:text-white">✕</button>
+        <h3 className="text-xl font-bold text-amber-400 mb-6 w-full pb-2 border-b border-zinc-800">Edit Details: {item.name}</h3>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center gap-4 border-2 border-dashed border-zinc-700 rounded-xl p-4">
+               {imagePreview && <img src={imagePreview} className="w-16 h-16 rounded-xl object-cover" />}
+               <div className="flex flex-col gap-2 flex-1">
+                   <label className="text-xs text-zinc-400">Replace Image (File)</label>
+                   <input type="file" accept="image/*" onChange={(e) => {
+                     const file = e.target.files[0];
+                     if(file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
+                   }} className="text-xs text-zinc-300"/>
+                   <label className="text-xs text-zinc-400 mt-2">OR External/Existing URL</label>
+                   <input value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-sm text-zinc-300 w-full" />
+               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+                <input value={formData.name} onChange={(e)=>setFormData({...formData, name: e.target.value})} placeholder="Name" className="bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2" required/>
+                <select value={formData.category} onChange={(e)=>setFormData({...formData, category: e.target.value})} className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-lg px-3 py-2 appearance-none">
+                  <option value="" disabled>Select Category</option>
+                  {["Starters", "Soups", "Chinese", "Mains", "Biryani", "Drinks", "Rolls & Wraps", "Waffles & Cake", "Desserts"].map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+                <input value={formData.price} type="number" onChange={(e)=>setFormData({...formData, price: e.target.value})} placeholder="Price" className="bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2" required/>
+                <input value={formData.discount} type="number" onChange={(e)=>setFormData({...formData, discount: e.target.value})} placeholder="Discount" className="bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2"/>
+                <input value={formData.badge} onChange={(e)=>setFormData({...formData, badge: e.target.value})} placeholder="Badge" className="bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2"/>
+            </div>
+            
+            <textarea value={formData.descrip} onChange={(e)=>setFormData({...formData, descrip: e.target.value})} placeholder="Description" rows={2} className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2 text-sm"/>
+
+            <div className="flex gap-6 mt-2">
+                <label className="flex items-center gap-2 text-zinc-300 text-sm"><input type="checkbox" checked={formData.veg} onChange={(e)=>setFormData({...formData, veg: e.target.checked})} className="accent-amber-500" /> Vegetarian</label>
+                <label className="flex items-center gap-2 text-zinc-300 text-sm"><input type="checkbox" checked={formData.available} onChange={(e)=>setFormData({...formData, available: e.target.checked})} className="accent-amber-500" /> Available</label>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+                <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl text-zinc-400 hover:bg-zinc-800 text-sm font-semibold transition">Cancel</button>
+                <button type="submit" className="px-6 py-2 rounded-xl bg-amber-500 text-zinc-950 hover:bg-amber-400 font-bold text-sm transition">Save Changes</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  )
 }
 
 function SectionHeader({ title, count }) {
