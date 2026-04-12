@@ -29,8 +29,11 @@ const handleSubmit = async (e) => {
         setLocalError("Passwords do not match");
         return;
     }
-    if (pass.length < 6) {
-        setLocalError("Password must be at least 6 characters");
+    
+    // Strong password regex: 1 lower, 1 upper, 1 number, 1 special char, min 6 chars
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+    if (!passwordRegex.test(pass)) {
+        setLocalError("Password must have at least 1 uppercase, 1 lowercase, 1 number, and 1 special character.");
         return;
     }
 
@@ -143,6 +146,7 @@ return (
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                     required
+                    maxLength={50}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/30 transition-all duration-200"
                 />
                 <button
@@ -180,6 +184,7 @@ return (
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     required
+                    maxLength={50}
                     className={`w-full bg-zinc-900 border rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition-all duration-200 ${
                     confirm && pass !== confirm
                         ? "border-pink-500 focus:ring-1 focus:ring-pink-500/30"

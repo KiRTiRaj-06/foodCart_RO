@@ -3,6 +3,10 @@
 const express  = require("express");
 const router   = express.Router();
 const pool     = require("../db");
+const { verifyToken, verifyAdmin } = require("../middleware/auth");
+
+// Protect all admin routes
+router.use(verifyToken, verifyAdmin);
 
 // ── GET /api/admin/users ─────────────────────────────────────
 // Returns all registered users (no passwords)

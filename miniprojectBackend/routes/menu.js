@@ -3,6 +3,7 @@ const router  = express.Router();
 const pool    = require("../db");
 const Joi     = require("joi");
 const { validate } = require("../middleware/validate");
+const { verifyToken, verifyAdmin } = require("../middleware/auth");
 
 const menuSchema = Joi.object({
     name: Joi.string().max(40).required(),
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
 
 // ── POST /api/menu ───────────────────────────────────────────
 // Creates a new menu item
-router.post('/', validate(menuSchema), async (req, res) => {
+router.post('/', verifyToken, verifyAdmin, validate(menuSchema), async (req, res) => {
     const { name, category, price, discount, descrip, image, badge, veg, available } = req.body;
 
     try {
@@ -64,7 +65,7 @@ router.post('/', validate(menuSchema), async (req, res) => {
 });
 
 // ── PUT /api/menu/:id ────────────────────────────────────────
-router.put('/:id', validate(menuSchema), async (req, res) => {
+router.put('/:id', verifyToken, verifyAdmin, validate(menuSchema), async (req, res) => {
     const { id } = req.params;
     const { name, category, price, discount, descrip, image, badge, veg, available } = req.body;
     
@@ -91,7 +92,7 @@ router.put('/:id', validate(menuSchema), async (req, res) => {
 });
 
 // ── DELETE /api/menu/:id ────────────────────────────────────────
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const result = await pool.query("DELETE FROM menu WHERE id = $1 RETURNING id", [id]);

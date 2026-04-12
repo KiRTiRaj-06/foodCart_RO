@@ -13,12 +13,14 @@ const SALT_ROUNDS = 11;
 const registerSchema = Joi.object({
     username: Joi.string().min(2).max(50).required(),
     email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
-    password: Joi.string().min(6).max(255).required(),
+    password: Joi.string().min(6).max(50).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/).required().messages({
+        'string.pattern.base': 'Password must have at least 1 uppercase, 1 lowercase, 1 number, and 1 special character.'
+    }),
 });
 
 const loginSchema = Joi.object({
     email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(6).max(50).required(),
 });
 
 router.post('/register', validate(registerSchema), async (req, res) => {
@@ -80,7 +82,7 @@ try {
     );
 
     if (result.rows.length === 0) {
-        return res.status(401).json({ success: false, message: "Invalid credentials or email doesn't exist " });
+        return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
     const user = result.rows[0];
@@ -144,7 +146,11 @@ try {
 
 // ── POST /api/auth/logout ──────────────────────────────────────
 router.post("/logout", (req, res) => {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+    });
     res.json({ success: true, message: "Logged out successfully" });
 });
 

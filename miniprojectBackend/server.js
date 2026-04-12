@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 const app = express()
 
 app.use(cors({
-    origin:      process.env.CLIENT_ORIGIN || "http://localhost:5173",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
     credentials: true,   // required so cookies/session are sent cross-origin
     }));
 
@@ -42,6 +42,13 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+// Stricter rate limit for authentication
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: { success: false, message: "Too many authentication attempts, please try again later" }
+});
+
 // ── Session (cart lives here for 24 hours) ────────────────────
 app.use(
     session({
@@ -58,7 +65,7 @@ app.use(
 );
 
 // ── Routes ────────────────────────────────────────────────────
-app.use("/api/auth",  require("./routes/auth"));
+app.use("/api/auth", authLimiter, require("./routes/auth"));
 app.use("/api/menu",  require("./routes/menu"));
 app.use("/api/cart",  require("./routes/cart"));
 app.use("/api/order", require("./routes/order"));

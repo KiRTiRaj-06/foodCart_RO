@@ -116,6 +116,7 @@ return (
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                     required
+                    maxLength={50}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30 transition-all duration-200"
                 />
                 <button
