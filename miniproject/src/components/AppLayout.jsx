@@ -24,12 +24,12 @@ export default function AppLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 font-sans flex flex-col">
+    <div className="min-h-screen bg-[#050505] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/10 via-[#050505] to-black text-white font-['Outfit'] flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <Header />
       <div className="flex flex-1 pt-16">
         <Sidebar activePage={activePage} onNavigate={handleNavigate} />
-        <div className="flex flex-col flex-1 pl-20 lg:pl-56">
-          <main className="flex-1 p-6 bg-zinc-900">
+        <div className="flex flex-col flex-1 pl-20 lg:pl-56 relative z-10 transition-all duration-300">
+          <main className="flex-1 p-6 lg:p-8">
             <Outlet />
           </main>
           <Footer />

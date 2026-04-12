@@ -31,10 +31,10 @@ return (
         <button
             key={cat}
             onClick={() => updateCategory(cat)}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+            className={`shrink-0 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
             activeCategory === cat
-                ? "bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/25"
-                : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+                ? "bg-linear-to-r from-amber-500 to-amber-400 text-zinc-950 shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] scale-105"
+                : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-100 backdrop-blur-md border border-white/5"
             }`}
         >
             {cat}
@@ -44,7 +44,7 @@ return (
 
       {/* Section Label */}
         <div className="flex items-center justify-between mb-4">
-        <h2 className="text-zinc-100 font-semibold text-sm tracking-wide">
+        <h2 className="text-white font-bold text-xl tracking-tight">
             {activeCategory === "All" ? "All Dishes" : activeCategory}
             { !menuLoading &&
             ( <span className="ml-2 text-zinc-500 font-normal">({filtered.length})</span>)}

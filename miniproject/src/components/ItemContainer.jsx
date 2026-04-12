@@ -9,13 +9,13 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
     : item?.price;
 
   return (
-    <div className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-all duration-200 hover:shadow-xl hover:shadow-black/30">
+    <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-amber-500/30 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(0,0,0,0.6)] hover:-translate-y-1 hover:scale-[1.015] flex flex-col relative">
 
       {/* ── Image — exact same height as original MenuCard ── */}
-      <div className="h-36 bg-linear-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
+      <div className="h-44 bg-zinc-900 relative overflow-hidden">
 
         {item?.image ? (
-          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+          <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-5xl opacity-30">🍽️</span>
@@ -51,8 +51,8 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
 
         {/* Name + Description */}
         <div>
-          <h3 className="text-zinc-100 font-semibold text-center text-sm">{item?.name || "Item Name"}</h3>
-          <p className="text-zinc-500 text-xs mt-0.5 text-center leading-relaxed line-clamp-2">{item?.descrip || ""}</p>
+          <h3 className="text-white font-bold text-base md:text-lg mb-1">{item?.name || "Item Name"}</h3>
+          <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">{item?.descrip || ""}</p>
         </div>
 
         {/* Price + Buttons row */}
@@ -84,7 +84,7 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
             {quantity > 0 && (
               <button
                 onClick={() => onRemove?.(item)}
-                className="flex items-center gap-1 bg-zinc-800 hover:bg-red-500/20 hover:text-red-400 border border-zinc-700 hover:border-red-500/40 text-zinc-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-200 active:scale-95"
+                className="flex items-center gap-1 bg-white/5 hover:bg-red-500/20 hover:text-red-400 border border-white/5 hover:border-red-500/40 text-zinc-300 text-xs font-bold px-3 py-2 rounded-xl transition-all duration-300 active:scale-95 backdrop-blur-md"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
@@ -103,7 +103,7 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
             {/* Add button */}
             <button
               onClick={() => onAdd?.(item)}
-              className="flex items-center gap-1.5 bg-zinc-800 hover:bg-amber-500 text-zinc-300 hover:text-zinc-950 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 active:scale-95"
+              className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md hover:bg-gradient-to-r hover:from-amber-500 hover:to-amber-400 text-white hover:text-zinc-950 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 hover:border-amber-300/50 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] ml-auto"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />

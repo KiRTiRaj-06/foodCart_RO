@@ -33,8 +33,8 @@ export default function Cart() {
   if (cartItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-center py-24">
-        <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center">
-          <svg className="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-tr from-white/5 to-white/10 border border-white/10 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.03)] backdrop-blur-2xl">
+          <svg className="w-10 h-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
           </svg>
         </div>
@@ -49,14 +49,14 @@ export default function Cart() {
   return (
     <div className="flex flex-col h-full gap-6">
       {/* Cart Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-zinc-100 font-semibold text-sm tracking-wide">
+      <div className="flex items-center justify-between pb-2 border-b border-white/5">
+        <h2 className="text-white font-bold text-xl tracking-tight">
           Your Order
-          <span className="ml-2 text-zinc-500 font-normal">({cartItems.length} items)</span>
+          <span className="ml-2 text-zinc-400 font-normal text-sm tracking-normal">({cartItems.length} items)</span>
         </h2>
         <button
           onClick={clearCart}
-          className="text-xs text-zinc-500 hover:text-red-400 transition-colors duration-200"
+          className="text-xs text-zinc-500 hover:text-red-400 transition-colors duration-200 uppercase tracking-widest font-semibold"
         >
           Clear all
         </button>
@@ -76,8 +76,8 @@ export default function Cart() {
       </div>
 
       {/* Summary */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col gap-3">
-        <h3 className="text-zinc-300 font-semibold text-xs uppercase tracking-widest">
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+        <h3 className="text-white font-bold text-sm uppercase tracking-widest border-b border-white/5 pb-3">
           Bill Summary
         </h3>
 
@@ -105,7 +105,7 @@ export default function Cart() {
         <button
           onClick={handleConfirmOrder}
           disabled={orderLoading}
-          className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full mt-2 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold text-sm py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border border-amber-300/50 hover:border-white/50"
         >
           {orderLoading ? "Placing Order..." : "Confirm Order →"}
         </button>
@@ -116,10 +116,10 @@ export default function Cart() {
 
 function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   return (
-    <div className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl p-3 hover:border-zinc-700 transition-colors duration-200">
+    <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl p-3 hover:border-amber-500/30 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,0,0,0.3)] group relative">
       {/* Color Swatch / Thumbnail */}
-      <div className="w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 text-xl">
-        <img src={item.image} alt="" className="w-10 h-10 rounded-3xl" />
+      <div className="w-14 h-14 rounded-[1rem] bg-white/5 flex items-center justify-center shrink-0 text-xl border border-white/10 overflow-hidden shadow-inner">
+        <img src={item.image} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
       </div>
 
       {/* Info */}
@@ -132,14 +132,14 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => onDecrease(item.id)}
-          className="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center text-sm transition-colors duration-150 active:scale-90"
+          className="w-8 h-8 rounded-[0.6rem] bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 text-zinc-300 flex items-center justify-center text-sm transition-all duration-300 active:scale-90 shadow-sm"
         >
           −
         </button>
         <span className="text-zinc-100 font-bold text-sm w-5 text-center">{item.quantity}</span>
         <button
           onClick={() => onIncrease(item.id)}
-          className="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-amber-500 hover:text-zinc-950 text-zinc-300 flex items-center justify-center text-sm transition-all duration-150 active:scale-90"
+          className="w-8 h-8 rounded-[0.6rem] bg-white/5 hover:bg-gradient-to-tr hover:from-amber-500 hover:to-amber-400 border border-white/5 hover:border-amber-300/50 hover:text-zinc-950 text-zinc-300 flex items-center justify-center text-sm transition-all duration-300 active:scale-90 hover:shadow-[0_0_10px_rgba(245,158,11,0.3)]"
         >
           +
         </button>

@@ -3,14 +3,14 @@ import logo from "../assets/1F6D2_color.png"
 function Footer(){
     
     return(
-<footer className="bg-zinc-900 border-t border-zinc-800 w-full mt-auto">
+<footer className="bg-black/40 backdrop-blur-2xl border-t border-white/5 w-full mt-auto relative z-10">
     <div className="max-w-6xl mx-auto px-8 py-10">
 
         {/* Top Row: Logo + Status */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <span className="text-zinc-950 font-black text-base">E</span>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                    <span className="text-zinc-950 font-black text-lg">E</span>
                 </div>
             <div>
             <p className="text-zinc-100 font-bold text-sm tracking-wide">The Food Cafe</p>
@@ -18,18 +18,18 @@ function Footer(){
             </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-full px-3 py-1.5 w-fit">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-zinc-400 text-xs font-medium">Kitchen is Open</span>
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 w-fit backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                <span className="text-zinc-300 text-xs font-semibold uppercase tracking-widest">Kitchen is Open</span>
             </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t border-zinc-800 mb-8" />
+        <div className="border-t border-white/5 mb-8" />
 
         {/* About Section */}
         <div className="flex flex-col gap-4 mb-12 max-w-4xl mx-auto text-center">
-            <h3 className="text-zinc-100 text-2xl sm:text-3xl font-black tracking-tight flex items-center justify-center gap-3">
+            <h3 className="text-white text-2xl sm:text-3xl font-black tracking-tight flex items-center justify-center gap-3">
                 <span className="w-10 h-[2px] bg-amber-500 rounded-full" />
                 About Raya's Kitchen
                 <span className="w-10 h-[2px] bg-amber-500 rounded-full" />
@@ -42,7 +42,7 @@ function Footer(){
         </div>
 
         {/* Divider */}
-        <div className="border-t border-zinc-800 mb-5" />
+        <div className="border-t border-white/5 mb-5" />
 
         {/* Bottom Row: Copyright + Socials */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -57,8 +57,8 @@ function Footer(){
                 { label: "Facebook", d: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
             ].map(({ label, d }) => (
             <a key={label} href="#" aria-label={label}
-                className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-500 flex items-center justify-center transition-all duration-200 group">
-                <svg className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-200 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24">
+                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/50 flex items-center justify-center transition-all duration-300 group hover:shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:-translate-y-1">
+                <svg className="w-4 h-4 text-zinc-400 group-hover:text-amber-400 transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
                     <path d={d} />
                 </svg>
             </a>

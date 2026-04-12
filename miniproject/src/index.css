@@ -1,12 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 body {
   margin: 0;
   padding: 0;
+  background-color: #050505;
+  color: #f4f4f5;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Outfit', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

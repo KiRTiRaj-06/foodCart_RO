@@ -4,17 +4,17 @@ import { useCart } from "../context/CartContext";
 export default function Sidebar({ activePage, onNavigate }) {
     const {cartCount , orderTotal} = useCart()
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-20 lg:w-56 bg-zinc-950 border-r border-zinc-800 flex flex-col justify-between py-6 z-40">
+    <aside className="fixed left-0 top-16 bottom-0 w-20 lg:w-56 bg-black/40 backdrop-blur-2xl border-r border-white/5 flex flex-col justify-between py-6 z-40 shadow-[4px_0_24px_rgba(0,0,0,0.5)]">
       {/* Nav Links */}
       <nav className="flex flex-col gap-2 px-3">
 
         {/* Menu Button */}
         <button
           onClick={() => onNavigate("menu")}
-          className={`group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200 ${
+          className={`group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-300 ${
             activePage === "menu"
-              ? "bg-amber-500/10 border border-amber-500/30 text-amber-400"
-              : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100 border border-transparent"
+              ? "bg-linear-to-r from-amber-500/20 to-amber-500/5 border border-amber-500/50 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+              : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100 border border-transparent"
           }`}
         >
           <svg
@@ -36,10 +36,10 @@ export default function Sidebar({ activePage, onNavigate }) {
         {/* Cart Button */}
         <button
           onClick={() => onNavigate("cart")}
-          className={`group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200 ${
+          className={`group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-300 ${
             activePage === "cart"
-              ? "bg-amber-500/10 border border-amber-500/30 text-amber-400"
-              : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100 border border-transparent"
+              ? "bg-linear-to-r from-amber-500/20 to-amber-500/5 border border-amber-500/50 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+              : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100 border border-transparent"
           }`}
         >
           {/* Cart Icon */}
@@ -68,13 +68,13 @@ export default function Sidebar({ activePage, onNavigate }) {
 
 
         {/* Divider */}
-        <div className="my-2 border-t border-zinc-800" />
+        <div className="my-2 border-t border-white/5" />
 
       </nav>
       
       {/* Total Section */}
       <div className=" flex flex-col gap-3 px-3">
-        <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-3 flex flex-col items-center lg:items-start gap-1">
+        <div className="rounded-xl bg-white/5 border border-white/10 p-3 flex flex-col items-center lg:items-start gap-1 backdrop-blur-md">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold hidden lg:block">
             Total
           </span>
@@ -99,7 +99,8 @@ export default function Sidebar({ activePage, onNavigate }) {
         {/* Place Order Button */}
       <button
           onClick={() => onNavigate("cart")}
-          className="flex items-center gap-3 rounded-xl px-3 py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 transition-all duration-200 shadow-lg shadow-amber-500/20 active:scale-95"
+          className="flex items-center justify-center gap-3 rounded-xl px-3 py-3 bg-linear-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] active:scale-95 border border-amber-300/50 hover:border-white/50"
+
         >
           <svg
             className="w-5 h-5 shrink-0"
