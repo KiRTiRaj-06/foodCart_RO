@@ -16,10 +16,19 @@ function Login() {
     const [email, setEmail] = useState("");
     const [pass,  setPass]  = useState("");
     const [showPass, setShowPass] = useState(false);
+    const [localError, setLocalError] = useState("");
 
     const handleLogin = async (e) => {
         e.preventDefault();
         clearError();
+        setLocalError("");
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            setLocalError("Invalid email format (e.g. name@example.com)");
+            return;
+        }
+
         try {
             const result = await login({ email, password: pass });
             // Admin login returns "admin" — go to admin dashboard
@@ -32,6 +41,8 @@ function Login() {
          // error is already set in UserContext via authError
         }
     };
+
+    const errorMsg = localError || authError;
 
 return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
@@ -57,12 +68,12 @@ return (
             </div>
 
           {/* Error */}
-            {authError && (
+            {errorMsg && (
             <div className="mb-5 flex items-center gap-2 bg-pink-500/10 border border-pink-500/30 rounded-xl px-4 py-3">
                 <svg className="w-4 h-4 text-pink-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-pink-400 text-xs">{authError}</p>
+                <p className="text-pink-400 text-xs">{errorMsg}</p>
             </div>
         )}
 

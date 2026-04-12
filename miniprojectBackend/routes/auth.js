@@ -12,12 +12,12 @@ const SALT_ROUNDS = 11;
 
 const registerSchema = Joi.object({
     username: Joi.string().min(2).max(50).required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
     password: Joi.string().min(6).max(255).required(),
 });
 
 const loginSchema = Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
     password: Joi.string().required(),
 });
 

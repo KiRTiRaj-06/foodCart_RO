@@ -26,6 +26,8 @@ const request = async (method, path, body) => {
 // ════════════════════════════════════════════════════════════
 export const fetchMenu = () => request("GET", "/menu");
 export const apiMenuAdd = (body) => request("POST", "/menu", body);
+export const apiMenuUpdate = (id, body) => request("PUT", `/menu/${id}`, body);
+export const apiMenuDelete = (id) => request("DELETE", `/menu/${id}`);
 
 // ════════════════════════════════════════════════════════════
 //  AUTH

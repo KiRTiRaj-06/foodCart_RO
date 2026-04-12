@@ -135,7 +135,6 @@ export default function MenuUploadForm() {
           {[
             "id",
             "name",
-            "category",
             "price",
             "discount",
             "badge",
@@ -148,6 +147,17 @@ export default function MenuUploadForm() {
               className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white"
             />
           ))}
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange}
+            className="bg-black border border-cyan-600 focus:border-[#d931ba] focus:shadow-[0_0_6px_#d931ba] outline-none rounded-lg px-3 py-2 text-white appearance-none"
+          >
+            <option value="" disabled>SELECT CATEGORY</option>
+            {["Starters", "Soups", "Chinese", "Mains", "Biryani", "Drinks", "Rolls & Wraps", "Waffles & Cake", "Desserts"].map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
 
         {/* DESCRIPTION */}

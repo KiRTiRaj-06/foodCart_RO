@@ -34,6 +34,12 @@ const handleSubmit = async (e) => {
         return;
     }
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        setLocalError("Invalid email format (e.g. name@example.com)");
+        return;
+    }
+
     try {
     await signup({ name, email, password: pass });
       navigate("/menu");  // redirect to menu after signup
