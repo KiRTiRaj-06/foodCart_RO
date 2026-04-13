@@ -1,5 +1,5 @@
 import { NavLink, Link } from "react-router";
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.jpg"
 import { useCart } from "../context/CartContext";
 import { useMenu } from "../context/MenuContext";
 import { useUser } from "../context/UserContext";
@@ -18,7 +18,7 @@ function Header() {
                     <Link to="/" className="flex items-center gap-3 no-underline">
                     {logo?
                         <img src={logo} alt="E" className="w-10 h-10 rounded-3xl" /> :
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                        <div className="w-10 h-10 rounded-full bg-linear-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
                             <span className="text-zinc-950 font-black text-lg tracking-tight">E</span>
                         </div>
                         }

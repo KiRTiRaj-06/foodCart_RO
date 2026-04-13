@@ -62,7 +62,7 @@ app.use(
         cookie: {
             maxAge: parseInt(process.env.SESSION_MAX_AGE_MS) || 86400000,
             httpOnly: true,
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             secure: process.env.NODE_ENV === "production",
         },
     })
