@@ -2,7 +2,13 @@
 // Central place for all HTTP calls to the backend.
 // Import whichever functions you need in your context files.
 
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+let rawBase = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Auto-fix common Vercel deployment mistakes (trailing slashes or missing /api)
+rawBase = rawBase.replace(/\/+$/, ""); 
+if (!rawBase.endsWith('/api')) {
+    rawBase += '/api';
+}
+const BASE = rawBase;
 
 const headers = (extra = {}) => ({
     "Content-Type": "application/json",
