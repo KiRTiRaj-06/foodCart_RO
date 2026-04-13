@@ -58,3 +58,4 @@ export const apiOrderById    = (id)          => request("GET",  `/order/${id}`);
 // ════════════════════════════════════════════════════════════
 export const apiAdminUsers   = ()  => request("GET", "/admin/users");
 export const apiAdminOrders  = ()  => request("GET", "/admin/orders");
+export const apiAdminUserDelete = (id) => request("DELETE", `/admin/users/${id}`);

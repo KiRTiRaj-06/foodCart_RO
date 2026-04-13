@@ -1,12 +1,20 @@
-// backend/routes/cart.js
-// Cart is stored in express-session and lives for 24 hours.
-// On order placement the session cart is cleared automatically.
 const express  = require("express");
 const router   = express.Router();
 const { initCart } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
+const Joi = require("joi");
 
 // All cart routes need the session cart initialised
 router.use(initCart);
+
+const cartAddSchema = Joi.object({
+    id: Joi.number().integer().required(),
+    name: Joi.string().required(),
+    price: Joi.number().min(0).optional(),
+    quantity: Joi.number().integer().min(1).default(1),
+    discount: Joi.number().min(0).max(100).optional(),
+    image: Joi.string().allow("").optional()
+});
 
 // ── GET /api/cart ─────────────────────────────────────────────
 router.get("/", (req, res) => {
@@ -15,7 +23,7 @@ router.get("/", (req, res) => {
 
 // ── POST /api/cart/add ────────────────────────────────────────
 // Body: { id, name, price, quantity, discount, image }
-router.post("/add", (req, res) => {
+router.post("/add", validate(cartAddSchema), (req, res) => {
   const { id, name, price, quantity = 1, discount = 0, image = "" } = req.body;
 
   if (!id || !name || price == null) {

@@ -51,8 +51,8 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
 
         {/* Name + Description */}
         <div>
-          <h3 className="text-white font-bold text-base md:text-lg mb-1">{item?.name || "Item Name"}</h3>
-          <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">{item?.descrip || ""}</p>
+          <h3 className="text-white font-bold text-base text-center md:text-lg mb-1">{item?.name || "Item Name"}</h3>
+          <p className="text-zinc-400 text-xs leading-relaxed text-center line-clamp-2">{item?.descrip || ""}</p>
         </div>
 
         {/* Price + Buttons row */}

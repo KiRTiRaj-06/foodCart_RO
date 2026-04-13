@@ -1,6 +1,6 @@
 // src/components/admin/AllUserDetails.jsx
 import React, { useState, useEffect } from "react";
-import { apiAdminUsers } from "../../api/api";
+import { apiAdminUsers, apiAdminUserDelete } from "../../api/api";
 
 export default function AllUserDetails() {
   const [users, setUsers] = useState([]);
@@ -14,6 +14,17 @@ export default function AllUserDetails() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to completely delete this user? Their order history will remain anonymously stored.")) return;
+    
+    try {
+      await apiAdminUserDelete(id);
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  };
+
   if (loading) return <Spinner />;
   if (error) return <ErrorMsg message={error} />;
   if (!users || users.length === 0) return <EmptyState text="No users registered yet" />;
@@ -25,7 +36,7 @@ export default function AllUserDetails() {
         <table className="w-full text-left">
           <thead className="bg-zinc-900">
             <tr>
-              {["ID", "Username", "Email", "Joined"].map((h) => (
+              {["ID", "Username", "Email", "Joined", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3 text-zinc-500 text-xs font-semibold uppercase tracking-widest">{h}</th>
               ))}
             </tr>
@@ -45,6 +56,17 @@ export default function AllUserDetails() {
                 <td className="px-4 py-3 text-zinc-400 text-sm">{u.email}</td>
                 <td className="px-4 py-3 text-zinc-500 text-xs">
                   {new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                </td>
+                <td className="px-4 py-3 text-zinc-500 text-xs">
+                  <button 
+                    onClick={() => handleDelete(u.id)}
+                    className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors"
+                    title="Delete User"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </td>
               </tr>
             ))}

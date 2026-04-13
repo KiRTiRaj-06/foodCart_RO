@@ -1,4 +1,3 @@
-// backend/routes/auth.js
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
@@ -7,23 +6,31 @@ const pool = require("../db");
 const { verifyToken } = require("../middleware/auth");
 const Joi     = require("joi");
 const { validate } = require("../middleware/validate");
+const rateLimit = require("express-rate-limit");
 
 const SALT_ROUNDS = 11;
 
+// Stricter rate limit for authentication (Login/Register only)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 8, 
+    message: { success: false, message: "Too many authentication attempts, please try again after 15 minutes" }
+});
+
 const registerSchema = Joi.object({
     username: Joi.string().min(2).max(50).required(),
-    email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
+    email: Joi.string().email().lowercase().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
     password: Joi.string().min(6).max(50).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/).required().messages({
         'string.pattern.base': 'Password must have at least 1 uppercase, 1 lowercase, 1 number, and 1 special character.'
     }),
 });
 
 const loginSchema = Joi.object({
-    email: Joi.string().email().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
+    email: Joi.string().email().lowercase().pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).required(),
     password: Joi.string().min(6).max(50).required(),
 });
 
-router.post('/register', validate(registerSchema), async (req, res) => {
+router.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
@@ -73,7 +80,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
 });
 
 // ── POST /api/auth/login ──────────────────────────────────────
-router.post("/login", validate(loginSchema), async (req, res) => {
+router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
 const { email, password } = req.body;
 
 try {

@@ -17,8 +17,17 @@ const menuSchema = Joi.object({
     available: Joi.boolean().default(true)
 });
 
+// Cache variable for ultra-fast reads. 
+// A food menu rarely changes, so skipping a DB query saves ~2-3 seconds per user session!
+let menuCache = null;
+
 router.get('/', async (req, res) => {
     try {
+        if (menuCache) {
+            // Serve directly from fast RAM
+            return res.json({ success: true, data: menuCache, cached: true });
+        }
+
         const result = await pool.query('SELECT * FROM menu ORDER BY id ASC');
 
         // PostgreSQL returns native booleans, but ensure consistency
@@ -28,7 +37,9 @@ router.get('/', async (req, res) => {
             available: !!row.available,
         }));
 
-        res.json({ success: true, data: items });
+        menuCache = items; // Populate the cache for the next users!
+
+        res.json({ success: true, data: items, cached: false });
 
   } catch (error) {
     console.error("GET /api/menu error:", error);
@@ -53,6 +64,7 @@ router.post('/', verifyToken, verifyAdmin, validate(menuSchema), async (req, res
             [name, category, price, discount || 0, descrip, image, badge, veg, available]
         );
 
+        menuCache = null; // Invalidate cache so the next load pulls fresh data
         res.status(201).json({ success: true, message: "Menu item added", data: result.rows[0] });
     } catch (error) {
         console.error("POST /api/menu error:", error);
@@ -81,6 +93,7 @@ router.put('/:id', verifyToken, verifyAdmin, validate(menuSchema), async (req, r
             return res.status(404).json({ success: false, message: "Menu item not found" });
         }
 
+        menuCache = null; // Invalidate cache
         res.json({ success: true, message: "Menu item updated", data: result.rows[0] });
     } catch (error) {
         console.error("PUT /api/menu error:", error);
@@ -99,6 +112,8 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ success: false, message: "Menu item not found" });
         }
+        
+        menuCache = null; // Invalidate cache
         res.json({ success: true, message: "Menu item deleted successfully" });
     } catch (error) {
         console.error("DELETE /api/menu error:", error);

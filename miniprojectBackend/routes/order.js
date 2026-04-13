@@ -21,59 +21,83 @@ router.post("/place", validate(placeOrderSchema), initCart, async (req, res) => 
     const cart = req.session.cart;
 
     if (!cart || cart.length === 0) {
-    return res.status(400).json({ success: false, message: "Cart is empty" });
+        return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-  // Calculate totals server-side — never trust client totals
-    const subtotal = cart.reduce((sum, item) => {
-    const effectivePrice = item.discount > 0
-      ? Math.round(item.price - (item.price * item.discount) / 100)
-        : item.price;
-    return sum + effectivePrice * item.quantity;
-}, 0);
+    try {
+        // CRITICAL SECURITY FIX: Fetch fresh prices from DB to prevent client-side manipulation
+        const itemIds = cart.map(i => i.id);
+        const dbItems = await pool.query(
+            "SELECT id, name, price, discount FROM menu WHERE id = ANY($1)",
+            [itemIds]
+        );
 
-    const tax   = parseFloat((subtotal * 0.05).toFixed(2));
-    const total = parseFloat((subtotal + tax).toFixed(2));
+        // Map the real prices to our cart items
+        let subtotal = 0;
+        const verifiedCart = cart.map(cartItem => {
+            const realMenu = dbItems.rows.find(row => row.id === cartItem.id);
+            if (!realMenu) {
+                throw new Error(`Item "${cartItem.name}" no longer exists in our menu`);
+            }
+            
+            const price = realMenu.price;
+            const discount = realMenu.discount;
+            const effectivePrice = discount > 0
+                ? Math.round(price - (price * discount) / 100)
+                : price;
+            
+            subtotal += effectivePrice * cartItem.quantity;
 
-try {
-    const result = await pool.query(
-        `INSERT INTO order_history
-        (user_id, items, subtotal, tax, total, table_number, status)
-        VALUES ($1, $2, $3, $4, $5, $6, 'placed')
-        RETURNING id`,
-    [
-        req.user.id,
-        JSON.stringify(cart),
-        subtotal,
-        tax,
-        total,
-        tableNumber || null,
-    ]
-    );
+            return {
+                ...cartItem,
+                name: realMenu.name,
+                price: price,
+                discount: discount
+            };
+        });
 
-    const newId = result.rows[0].id;
+        const tax   = parseFloat((subtotal * 0.05).toFixed(2));
+        const total = parseFloat((subtotal + tax).toFixed(2));
 
-    // Clear session cart after successful order
-    req.session.cart = [];
+        const result = await pool.query(
+            `INSERT INTO order_history
+            (user_id, items, subtotal, tax, total, table_number, status)
+            VALUES ($1, $2, $3, $4, $5, $6, 'placed')
+            RETURNING id`,
+            [
+                req.user.id,
+                JSON.stringify(verifiedCart),
+                subtotal,
+                tax,
+                total,
+                tableNumber || null,
+            ]
+        );
 
-    res.status(201).json({
-        success: true,
-        message: "Order placed successfully",
-        order: {
-            id: newId,
-            user_id: req.user.id,
-            items:  cart,
-        subtotal,
-        tax,
-        total,
-        table_number: tableNumber || null,
-        status:       "placed",
-    },
-    });
-} catch (err) {
-    console.error("POST /api/order/place error:", err);
-    res.status(500).json({ success: false, message: "Failed to place order" });
-}
+        const newId = result.rows[0].id;
+
+        // Clear session cart after successful order
+        req.session.cart = [];
+
+        res.status(201).json({
+            success: true,
+            message: "Order placed successfully",
+            order: {
+                id: newId,
+                user_id: req.user.id,
+                items:  verifiedCart,
+                subtotal,
+                tax,
+                total,
+                table_number: tableNumber || null,
+                status:       "placed",
+            },
+        });
+    } catch (err) {
+        console.error("POST /api/order/place error:", err);
+        const code = err.message.includes("no longer exists") ? 404 : 500;
+        res.status(code).json({ success: false, message: err.message || "Failed to place order" });
+    }
 });
 
 // ── GET /api/order/history ────────────────────────────────────
