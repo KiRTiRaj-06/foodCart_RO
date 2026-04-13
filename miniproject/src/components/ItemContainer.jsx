@@ -103,7 +103,7 @@ export default  function ItemContainer({item, quantity = 0, onAdd, onRemove  }) 
             {/* Add button */}
             <button
               onClick={() => onAdd?.(item)}
-              className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md hover:bg-gradient-to-r hover:from-amber-500 hover:to-amber-400 text-white hover:text-zinc-950 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 hover:border-amber-300/50 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] ml-auto"
+              className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md hover:bg-linear-to-r hover:from-amber-500 hover:to-amber-400 text-white hover:text-zinc-950 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 hover:border-amber-300/50 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] ml-auto"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />

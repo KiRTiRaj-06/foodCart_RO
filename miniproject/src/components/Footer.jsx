@@ -9,7 +9,7 @@ function Footer(){
         {/* Top Row: Logo + Status */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
                     <span className="text-zinc-950 font-black text-lg">E</span>
                 </div>
             <div>
@@ -30,9 +30,9 @@ function Footer(){
         {/* About Section */}
         <div className="flex flex-col gap-4 mb-12 max-w-4xl mx-auto text-center">
             <h3 className="text-white text-2xl sm:text-3xl font-black tracking-tight flex items-center justify-center gap-3">
-                <span className="w-10 h-[2px] bg-amber-500 rounded-full" />
+                <span className="w-10 h-0.5 bg-amber-500 rounded-full" />
                 About Raya's Kitchen
-                <span className="w-10 h-[2px] bg-amber-500 rounded-full" />
+                <span className="w-10 h-0.5 bg-amber-500 rounded-full" />
             </h3>
             <p className="text-zinc-400 text-base sm:text-lg leading-relaxed sm:leading-loose font-medium px-4">
                 We believe that food is more than just sustenance; it's an experience. 
