@@ -31,7 +31,7 @@ return (
         <button
             key={cat}
             onClick={() => updateCategory(cat)}
-            className={`shrink-0 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+            className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
             activeCategory === cat
                 ? "bg-linear-to-r from-amber-500 to-amber-400 text-zinc-950 shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] scale-105"
                 : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-100 backdrop-blur-md border border-white/5"
